@@ -58,7 +58,7 @@ public:
 		cr->fill();
 	}
 };
-  
+
 MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	ostringstream str_stream;
 	Size size_y = grid.get_size_y();
@@ -72,7 +72,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 
 	main_box.append(main_frame);
 	main_frame.set_margin(10);
-  
+
 	str_stream << "Mosaic " << size_x << "x" << size_y;
 	main_frame.set_label(str_stream.str());
 	main_frame.set_label_align(Gtk::Align::CENTER);

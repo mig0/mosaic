@@ -96,13 +96,13 @@ public:
 		for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
 			for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
 				if (without_corners
-			      		? (y == y1 || y == y2) && x != x1 && x != x2 || (x == x1 || x == x2) && y != y1 && y != y2
-			      		: y == y1 || y == y2 || x == x1 || x == x2
+					? (y == y1 || y == y2) && x != x1 && x != x2 || (x == x1 || x == x2) && y != y1 && y != y2
+					: y == y1 || y == y2 || x == x1 || x == x2
 				)
 					set_color(y, x, color);
 			}
 		}
-        }
+	}
 
 	void set_filled_rect_color(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
 		assert_coords(y1, x1);
@@ -110,18 +110,18 @@ public:
 
 		for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
 			for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
-			      	if (!(without_corners && (y == y1 || y == y2) && (x == x1 || x == x2)))
+				if (!(without_corners && (y == y1 || y == y2) && (x == x1 || x == x2)))
 					set_color(y, x, color);
 			}
 		}
-        }
-        
-	void set_filled_rect_2_color(Index y1, Index x1, Index y2, Index x2, Color color1, Color color2, bool without_corners = false) { 
+	}
+
+	void set_filled_rect_2_color(Index y1, Index x1, Index y2, Index x2, Color color1, Color color2, bool without_corners = false) {
 		set_filled_rect_color(y1, x1, y2, x2, color1, without_corners);
 		set_rect_color(y1, x1, y2, x2, color2, without_corners);
 	}
 
-	void set_filled_rect_rainbow_color(Index y1, Index x1, Index y2, Index x2, Color color0 = Re, bool without_corners = false) { 
+	void set_filled_rect_rainbow_color(Index y1, Index x1, Index y2, Index x2, Color color0 = Re, bool without_corners = false) {
 		Index min_y = min(y1, y2);
 		Index max_y = max(y1, y2);
 		Index min_x = min(x1, x2);
@@ -169,7 +169,7 @@ public:
 			set_rhomb_color(y0, x0, r, color);
 		}
 	}
-	
+
 	void set_filled_rhomb_2_color(Index y0, Index x0, Size radius, Color color1, Color color2) {
 		set_filled_rhomb_color(y0, x0, radius, color1);
 		set_rhomb_color(y0, x0, radius, color2);
@@ -182,7 +182,7 @@ public:
 			color = get_next_color(color);
 		}
 	}
-	
+
 	void set_circle_color(Index y0, Index x0, Size radius, Color color) {
 		assert_coords(y0, x0);
 
@@ -194,9 +194,9 @@ public:
 		Index xd = 0;
 		Index yd = radius;
 		int decesion_threashold = 3 - 2 * radius;
-		
+
 		while (true) {
- 			set_color(y0 + yd, x0 + xd, color);
+			set_color(y0 + yd, x0 + xd, color);
 			set_color(y0 + yd, x0 - xd, color);
 			set_color(y0 - yd, x0 + xd, color);
 			set_color(y0 - yd, x0 - xd, color);
@@ -204,7 +204,7 @@ public:
 			set_color(y0 + xd, x0 - yd, color);
 			set_color(y0 - xd, x0 + yd, color);
 			set_color(y0 - xd, x0 - yd, color);
- 			                                                                                                 
+
 			if (yd < xd) break;
 
 			xd++;
@@ -228,16 +228,16 @@ public:
 		Index xd = 0;
 		Index yd = radius;
 		int decesion_threashold = 3 - 2 * radius;
-		
+
 		while (true) {
- 			set_line_color(y0 + yd, x0 + xd, y0 + yd, x0 - xd, color);
-			
+			set_line_color(y0 + yd, x0 + xd, y0 + yd, x0 - xd, color);
+
 			set_line_color(y0 - yd, x0 + xd, y0 - yd, x0 - xd, color);
 
 			set_line_color(y0 + xd, x0 + yd, y0 + xd, x0 - yd, color);
 
 			set_line_color(y0 - xd, x0 + yd, y0 - xd, x0 - yd, color);
- 			                                                                                                 
+
 			if (yd < xd) break;
 
 			xd++;
@@ -262,7 +262,7 @@ public:
 		Index xd = 0;
 		Index yd = radius;
 		int decesion_threashold = 3 - 2 * radius;
-		
+
 		while (true) {
 			if (yd == xd) return xd;
 			if (yd < xd) return yd;
@@ -288,11 +288,11 @@ public:
 			set_line_color(y0 - radius, x0, y0 + radius, x0, color);
 		}
 		if (axes_or_diagonal == 2 || axes_or_diagonal == 3) {
-			Size delta = get_circle_diagonal_delta(radius); 
+			Size delta = get_circle_diagonal_delta(radius);
 			set_line_color(y0 - delta, x0 - delta, y0 + delta, x0 + delta, color);
 			set_line_color(y0 - delta, x0 + delta, y0 + delta, x0 - delta, color);
 		}
-	}	
+	}
 
 	void set_clock_color(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours = 3, unsigned int minutes = 0) {
 		set_circle_color(y0, x0, radius, color1);
@@ -370,7 +370,7 @@ public:
 			}
 		}
 	}
-	
+
 	void set_text_color(Index y0, Index x0, string str, Color fg_color, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
 		assert_coords(y0, x0);
 
@@ -378,7 +378,7 @@ public:
 			set_char_color(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
 		}
 	}
-		
+
 	void set_text_rainbow_color(Index y0, Index x0, string str, Color fg_color0 = Re, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
 		Color fg_color = fg_color0;
 		assert_coords(y0, x0);
@@ -390,7 +390,7 @@ public:
 			if (str[c] != ' ' || !TEXT_RAINBOW_SKIPS_COLOR_FOR_SPACE)
 				fg_color = get_next_color(fg_color);
 		}
-	}	
+	}
 
 	bool are_coords_valid(Index y, Index x) {
 		return y < size_y && x < size_x;
@@ -471,7 +471,7 @@ public:
 			return false;
 		}
 
-	        return success;
+		return success;
 	}
 
 	void show() {
