@@ -66,6 +66,8 @@ int main(int argc, char **argv) {
 
 	grid.set_text_rainbow_color(1, 1, "My big text", Re, Ye);
 
+	grid.save("text-example.sav");
+
 	auto app = Gtk::Application::create("Migo.Mosaic");
 
 	return app->make_window_and_run<MosaicWindow>(argc, argv, grid);

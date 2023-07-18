@@ -432,6 +432,48 @@ public:
 		return (Color)prev_color;
 	}
 
+	char get_color_save_char(Index y, Index x) {
+		Color color = get_color(y, x);
+		return
+			color == Re ? '#' :
+			color == Wh ? '.' :
+			color == Ye ? ':' :
+			color == Or ? 'O' :
+			color == Bl ? '*' :
+			color == Gr ? '@' :
+			throw "Invalid color";
+	}
+
+	bool save(ostream &os) {
+		os << "# Save file for grid " << size_x << "x" << size_y << endl;
+		for (Index y = 0; y < size_y; y++) {
+			for (Index x = 0; x < size_x; x++) {
+				os << get_color_save_char(y, x);
+			}
+			os << endl;
+		}
+		return true;
+	}
+
+	bool save(string filename) {
+		fstream fs;
+		fs.open(filename.c_str(), ios_base::out);
+		if (!fs.is_open()) {
+			cerr << "Can't open file " << filename << " for saving" << endl;
+			return false;
+		}
+
+		bool success = save(fs);
+
+		fs.close();
+		if (fs.is_open()) {
+			cerr << "Can't close file " << filename << " for saving" << endl;
+			return false;
+		}
+
+	        return success;
+	}
+
 	void show() {
 		for (Index y = 0; y < size_y; y++) {
 			for (Index x = 0; x < size_x; x++) {
