@@ -1,0 +1,47 @@
+1) Implement without_corners argument in set_rect_color
+	DONE
+
+2) Implement grid.set_filled_rect_2_color(25, 6, 2, 20, Bl, Re[, true])
+	DONE
+
+3) Implement grid.set_filled_rect_rainbow_color(25, 6, 2, 20, Bl[, true])
+	DONE
+
+4) Rename set_circle_color to set_rhomb_color
+	DONE
+
+5) Implement set_filled_rhomb_color(y0, x0, radius, color)
+	DONE
+
+6) Implement set_filled_rhomb_2_color(y0, x0, radius, color1, color2)
+	DONE
+
+7) Implement set_filled_rhomb_rainbow_color(y0, x0, radius, color0 = Re)
+	DONE
+
+8) Implement set_circle_color using Bresenham’s Circle Drawing Algorithm
+	https://iq.opengenus.org/bresenhams-circle-drawing-algorithm/
+	DONE
+
+9) Implement set_filled_circle_color(y0, x0, radius, color)
+	DONE
+
+10) Implement set_filled_circle_2_color(y0, x0, radius, color1, color2)
+	DONE
+
+11) Implement set_filled_circle_rainbow_color(y0, x0, radius, color0 = Re)
+	DONE
+
+12) Implement set_circle_crest_color(y0, x0, radius, color, axes_or_diagonal)
+	DONE
+
+13) Implement set_clock_color(y0, x0, radius, color1, color2, color3, hours = 3)
+	DONE
+
+14) Implement set_char_color(y0, x0, char ch, fg_color, bg_color=NO_COLOR)
+	DONE
+
+15) Implement set_text_color(y0, x0, char *text, fg_color, bg_color=NO_COLOR)
+	DONE
+
+16) Implement grid.save(filename) and grid.load(filename)
