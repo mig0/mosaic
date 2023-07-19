@@ -432,8 +432,7 @@ public:
 		return (Color)prev_color;
 	}
 
-	char get_color_save_char(Index y, Index x) {
-		Color color = get_color(y, x);
+	char get_save_char_for_color(Color color) {
 		return
 			color == Re ? '#' :
 			color == Wh ? '.' :
@@ -444,19 +443,38 @@ public:
 			throw "Invalid color";
 	}
 
+	Color get_color_for_save_char(char ch) {
+		return
+			ch == get_save_char_for_color(Re) ? Re :
+			ch == get_save_char_for_color(Wh) ? Wh :
+			ch == get_save_char_for_color(Ye) ? Ye :
+			ch == get_save_char_for_color(Or) ? Or :
+			ch == get_save_char_for_color(Bl) ? Bl :
+			ch == get_save_char_for_color(Gr) ? Gr :
+			throw string("Invalid save char ") + ch;
+	}
+
+	char get_color_save_char(Index y, Index x) {
+		Color color = get_color(y, x);
+		return get_save_char_for_color(color);
+	}
+
 	bool save(ostream &os) {
 		os << "# Save file for grid " << size_x << "x" << size_y << endl;
+
 		for (Index y = 0; y < size_y; y++) {
 			for (Index x = 0; x < size_x; x++) {
 				os << get_color_save_char(y, x);
 			}
 			os << endl;
 		}
+
 		return true;
 	}
 
 	bool save(string filename) {
 		fstream fs;
+
 		fs.open(filename.c_str(), ios_base::out);
 		if (!fs.is_open()) {
 			cerr << "Can't open file " << filename << " for saving" << endl;
@@ -468,6 +486,57 @@ public:
 		fs.close();
 		if (fs.is_open()) {
 			cerr << "Can't close file " << filename << " for saving" << endl;
+			return false;
+		}
+
+		return success;
+	}
+
+	bool load(istream &is) {
+		char first_line[40];
+		is.getline(first_line, 40);
+
+		string first_line_str = first_line;
+		string expected_prefix = "# Save file for grid ";
+		if (first_line_str.compare(0, expected_prefix.size(), expected_prefix) != 0) {
+			cerr << "Invalid file format, no expected line (" << expected_prefix << "XxY) found" << endl;
+			return false;
+		}
+
+		string expected_size_str = to_string(size_x) + 'x' + to_string(size_y);
+		string actual_size_str = first_line_str.substr(expected_prefix.size(), first_line_str.size());
+		if (actual_size_str != expected_size_str) {
+			cerr << "Wrong size (" << actual_size_str << ") when expected (" << expected_size_str << ")" << endl;
+			return false;
+		}
+
+		for (Index y = 0; y < size_y; y++) {
+			for (Index x = 0; x < size_x; x++) {
+				char ch;
+				is >> ch;
+				Color color = get_color_for_save_char(ch);
+				set_color(y, x, color);
+			}
+			is.ignore();
+		}
+
+		return true;
+	}
+
+	bool load(string filename) {
+		fstream fs;
+
+		fs.open(filename.c_str(), ios_base::in);
+		if (!fs.is_open()) {
+			cerr << "Can't open file " << filename << " for loading" << endl;
+			return false;
+		}
+
+		bool success = load(fs);
+
+		fs.close();
+		if (fs.is_open()) {
+			cerr << "Can't close file " << filename << " for loading" << endl;
 			return false;
 		}
 

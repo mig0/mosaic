@@ -64,9 +64,12 @@ int main(int argc, char **argv) {
 //	grid.set_text_color(7, 10, "love", Re);
 //	grid.set_text_color(12, 14, "you", Re, NO_COLOR, 3);
 
-	grid.set_text_rainbow_color(1, 1, "My big text", Re, Ye);
+//	grid.set_text_rainbow_color(1, 1, "My big text", Re, Ye);
 
-	grid.save("text-example.sav");
+//	grid.save("text-example.sav");
+//	if (!grid.load("unexisting-file.txt")) exit(1);
+//	if (!grid.load("main.cpp")) exit(1);
+	grid.load("text-example.sav");
 
 	auto app = Gtk::Application::create("Migo.Mosaic");
 
