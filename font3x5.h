@@ -4,7 +4,7 @@
 const char FIRST_FONT_CHAR = ' ';
 const char LAST_FONT_CHAR  = '~';
 
-int font3x5[LAST_FONT_CHAR - FIRST_FONT_CHAR + 1][5] = {
+constexpr int font3x5[LAST_FONT_CHAR - FIRST_FONT_CHAR + 1][5] = {
 	{ 0, 0, 0, 0, 0 },  // ' '
 	{ 2, 2, 2, 0, 2 },  // '!'
 	{ 5, 5, 0, 0, 0 },  // '"'
