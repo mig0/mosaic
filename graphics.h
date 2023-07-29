@@ -10,6 +10,13 @@ protected:
 	Gtk::Grid main_grid;
 	Gtk::Frame control_frame;
 	Gtk::Box control_box;
+	Gtk::Box action_box;
+	Gtk::Box active_color_box;
+	Gtk::Label active_color_label;
+	Gtk::MenuButton active_color_button;
+	Gtk::Box button_box;
+	Gtk::Button save_button;
+	Gtk::Button load_button;
 	Gtk::Button quit_button;
 	Grid &grid;
 
