@@ -77,12 +77,12 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	button_box.append(save_button);
 	save_button.set_label("Save");
 	save_button.set_margin(4);
-	save_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::quit));
+	save_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::save));
 
 	button_box.append(load_button);
 	load_button.set_label("Load");
 	load_button.set_margin(4);
-	load_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::quit));
+	load_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::load));
 
 	button_box.append(quit_button);
 	quit_button.set_label("Quit");
@@ -138,4 +138,48 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 void MosaicWindow::set_grid_button_class(Index y, Index x) {
 	vector<Glib::ustring> css_classes = { grid.get_color_name(y, x) };
 	main_grid.get_child_at(x, y)->set_css_classes(css_classes);
+}
+
+void MosaicWindow::show_file_dialog(bool is_save) {
+	auto dialog = new Gtk::FileChooserDialog(
+		"Please choose a file",
+		is_save ? Gtk::FileChooser::Action::SAVE : Gtk::FileChooser::Action::OPEN);
+	dialog->set_transient_for(*this);
+	dialog->set_modal(true);
+	dialog->signal_response().connect(sigc::bind(
+		sigc::mem_fun(*this, is_save ? &MosaicWindow::on_file_dialog_save : &MosaicWindow::on_file_dialog_load), dialog));
+
+	// add response buttons to the dialog
+	dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
+	dialog->add_button(is_save ? "_Save" : "_Load", Gtk::ResponseType::OK);
+
+	// add filters to select only certain file types
+	auto filter_sav = Gtk::FileFilter::create();
+	filter_sav->set_name("SAV files");
+	filter_sav->add_pattern("*.sav");
+	dialog->add_filter(filter_sav);
+
+	auto filter_text = Gtk::FileFilter::create();
+	filter_text->set_name("Text files");
+	filter_text->add_mime_type("text/plain");
+	dialog->add_filter(filter_text);
+
+	auto filter_any = Gtk::FileFilter::create();
+	filter_any->set_name("Any files");
+	filter_any->add_pattern("*");
+	dialog->add_filter(filter_any);
+
+	dialog->show();
+}
+
+void MosaicWindow::on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog) {
+	if (response_id == Gtk::ResponseType::OK)
+		grid.save(dialog->get_file()->get_path());
+	delete dialog;
+}
+
+void MosaicWindow::on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog) {
+	if (response_id == Gtk::ResponseType::OK)
+		grid.load(dialog->get_file()->get_path());
+	delete dialog;
 }

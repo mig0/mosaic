@@ -22,6 +22,11 @@ protected:
 
 	void set_grid_button_class(Index y, Index x);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
+	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
+	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);
+	void show_file_dialog(bool is_save);
+	void save() { show_file_dialog(true); }
+	void load() { show_file_dialog(false); }
 	void quit() { hide(); }
 	bool on_close_request() { on_hide(); return false; }
 	void on_hide() { cout << "Have a nice day!" << endl; }
