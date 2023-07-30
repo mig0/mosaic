@@ -64,8 +64,7 @@ public:
 		return colors[y][x];
 	}
 
-	string get_color_name(Index y, Index x) {
-		Color color = get_color(y, x);
+	const char *get_color_name(Color color) {
 		return
 			color == Re ? "red" :
 			color == Wh ? "white" :
@@ -74,6 +73,11 @@ public:
 			color == Bl ? "blue" :
 			color == Gr ? "green" :
 			throw "Invalid color";
+	}
+
+	string get_color_name(Index y, Index x) {
+		Color color = get_color(y, x);
+		return get_color_name(color);
 	}
 
 	void set_color(Index y, Index x, Color color) {
