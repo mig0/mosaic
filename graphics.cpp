@@ -8,7 +8,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	set_title("Mosaic application");
 	set_default_size(200, 200);
 
-	Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
+	css_provider = Gtk::CssProvider::create();
 	css_provider->load_from_data(" \
 		button.red    { background-image: image(rgb(180, 30, 30));   border-color: rgb(80, 10, 10); } \
 		button.white  { background-image: image(rgb(240, 240, 240)); border-color: rgb(120, 120, 120); } \
@@ -62,9 +62,8 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	active_color_box.append(active_color_button);
 	active_color_button.set_margin(5);
 	Gtk::Button current_color_button;
-	vector<Glib::ustring> css_classes = { "red" };
-	current_color_button.set_css_classes(css_classes);
 	current_color_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+	set_button_color(current_color_button, active_color);
 	active_color_button.set_child(current_color_button);
 	active_color_button.set_always_show_arrow(true);
 //	active_color_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::quit));
@@ -98,21 +97,45 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 		for (Index x = 0; x < size_x; x++) {
 			ostringstream str_stream;
 			str_stream << "(" << x << ", " << y << ")";
-			Gtk::Button button;
+			Gtk::Button &button = *(new Gtk::Button);
 			main_grid.attach(button, x, y);
-			set_grid_button_class(y, x);
 			button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 			button.set_tooltip_text(str_stream.str());
+			button.signal_clicked().connect([this, y, x]() { set_grid_cell_active_color(y, x); });
 		}
 	}
+	reload_grid();
 
 	auto controller = Gtk::EventControllerKey::create();
 	controller->signal_key_pressed().connect(
 		sigc::mem_fun(*this, &MosaicWindow::on_window_key_pressed), false);
 	add_controller(controller);
+}
 
-	main_grid.show();
-	main_frame.show();
+void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
+	vector<Glib::ustring> css_classes = { grid.get_color_name(color) };
+	button.set_css_classes(css_classes);
+}
+
+void MosaicWindow::reload_grid_cell(Index y, Index x) {
+	set_button_color(*main_grid.get_child_at(x, y), grid.get_color(y, x));
+}
+
+void MosaicWindow::reload_grid() {
+	for (Index y = 0; y < grid.get_size_y(); y++) {
+		for (Index x = 0; x < grid.get_size_x(); x++) {
+			reload_grid_cell(y, x);
+		}
+	}
+}
+
+void MosaicWindow::set_grid_cell_color(Index y, Index x, Color color) {
+	grid.set_color(y, x, color);
+	reload_grid_cell(y, x);
+}
+
+void MosaicWindow::set_grid_cell_active_color(Index y, Index x) {
+	set_grid_cell_color(y, x, active_color);
 }
 
 bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state)
@@ -133,11 +156,6 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 
 	// the event has not been handled
 	return false;
-}
-
-void MosaicWindow::set_grid_button_class(Index y, Index x) {
-	vector<Glib::ustring> css_classes = { grid.get_color_name(y, x) };
-	main_grid.get_child_at(x, y)->set_css_classes(css_classes);
 }
 
 void MosaicWindow::show_file_dialog(bool is_save) {
@@ -182,4 +200,5 @@ void MosaicWindow::on_file_dialog_load(int response_id, Gtk::FileChooserDialog* 
 	if (response_id == Gtk::ResponseType::OK)
 		grid.load(dialog->get_file()->get_path());
 	delete dialog;
+	reload_grid();
 }

@@ -13,14 +13,20 @@ protected:
 	Gtk::Box action_box;
 	Gtk::Box active_color_box;
 	Gtk::Label active_color_label;
+	Color active_color = Re;
 	Gtk::MenuButton active_color_button;
 	Gtk::Box button_box;
 	Gtk::Button save_button;
 	Gtk::Button load_button;
 	Gtk::Button quit_button;
+	Glib::RefPtr<Gtk::CssProvider> css_provider;
 	Grid &grid;
 
-	void set_grid_button_class(Index y, Index x);
+	void reload_grid();
+	void reload_grid_cell(Index y, Index x);
+	void set_grid_cell_color(Index y, Index x, Color color);
+	void set_grid_cell_active_color(Index y, Index x);
+	void set_button_color(Gtk::Widget &button, Color color);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
 	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);
