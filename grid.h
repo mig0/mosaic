@@ -27,6 +27,8 @@ enum Color {
 	Bl = 5,
 	NUM_COLORS,
 	NO_COLOR = NUM_COLORS,
+	COLOR_FIRST = 0,
+	COLOR_LAST = NUM_COLORS - 1,
 };
 
 enum Step {
@@ -424,6 +426,11 @@ public:
 		str += "m█▉[m";
 
 		return str;
+	}
+
+	Color get_next_color_nowrap(Color color) {
+		int next_color = ((int)color + 1);
+		return (Color)next_color;
 	}
 
 	Color get_next_color(Color color) {
