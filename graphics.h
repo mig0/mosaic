@@ -14,7 +14,10 @@ protected:
 	Gtk::Box active_color_box;
 	Gtk::Label active_color_label;
 	Color active_color = Re;
-	Gtk::MenuButton active_color_button;
+	Gtk::MenuButton active_color_menu_button;
+	Gtk::Button active_color_button;
+	Gtk::Popover active_color_popover;
+	Gtk::Box color_selection_box;
 	Gtk::Box button_box;
 	Gtk::Button save_button;
 	Gtk::Button load_button;
@@ -26,6 +29,7 @@ protected:
 	void reload_grid_cell(Index y, Index x);
 	void set_grid_cell_color(Index y, Index x, Color color);
 	void set_grid_cell_active_color(Index y, Index x);
+	void set_active_color(Color color);
 	void set_button_color(Gtk::Widget &button, Color color);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);

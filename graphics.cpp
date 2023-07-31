@@ -51,14 +51,26 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	active_color_box.append(active_color_label);
 	active_color_label.set_label("Active Color");
 
-	active_color_box.append(active_color_button);
-	active_color_button.set_margin(5);
-	Gtk::Button current_color_button;
-	current_color_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
-	set_button_color(current_color_button, active_color);
-	active_color_button.set_child(current_color_button);
-	active_color_button.set_always_show_arrow(true);
-//	active_color_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::quit));
+	active_color_box.append(active_color_menu_button);
+	active_color_menu_button.set_margin(5);
+	active_color_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+	set_button_color(active_color_button, active_color);
+	active_color_menu_button.set_child(active_color_button);
+	active_color_menu_button.set_always_show_arrow(true);
+
+	active_color_menu_button.set_popover(active_color_popover);
+	active_color_popover.set_child(color_selection_box);
+	color_selection_box.set_orientation(Gtk::Orientation::VERTICAL);
+	color_selection_box.set_halign(Gtk::Align::CENTER);
+	color_selection_box.set_margin(0);
+	for (Color color = COLOR_FIRST; color <= COLOR_LAST; color = grid.get_next_color_nowrap(color)) {
+		Gtk::Button &color_selection_button = *(new Gtk::Button);
+		color_selection_button.set_margin(3);
+		color_selection_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+		color_selection_button.signal_clicked().connect([this, color]() { set_active_color(color); });
+		set_button_color(color_selection_button, color);
+		color_selection_box.append(color_selection_button);
+	}
 
 	control_box.append(button_box);
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
@@ -128,6 +140,12 @@ void MosaicWindow::set_grid_cell_color(Index y, Index x, Color color) {
 
 void MosaicWindow::set_grid_cell_active_color(Index y, Index x) {
 	set_grid_cell_color(y, x, active_color);
+}
+
+void MosaicWindow::set_active_color(Color color) {
+	active_color = color;
+	set_button_color(active_color_button, active_color);
+	active_color_popover.popdown();
 }
 
 bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state)
