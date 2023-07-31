@@ -31,6 +31,8 @@ protected:
 	void set_grid_cell_active_color(Index y, Index x);
 	void set_active_color(Color color);
 	void set_button_color(Gtk::Widget &button, Color color);
+	void on_grid_button2_press(int n, double x, double y);
+	void on_grid_button3_press(int n, double x, double y);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
 	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);

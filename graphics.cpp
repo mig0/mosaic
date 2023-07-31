@@ -106,6 +106,16 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 			button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 			button.set_tooltip_text(str_stream.str());
 			button.signal_clicked().connect([this, y, x]() { set_grid_cell_active_color(y, x); });
+			auto button2_controller = Gtk::GestureClick::create();
+			button2_controller->set_button(GDK_BUTTON_MIDDLE);
+			button2_controller->set_propagation_phase(Gtk::PropagationPhase::CAPTURE);
+			button2_controller->signal_pressed().connect(sigc::mem_fun(*this, &MosaicWindow::on_grid_button2_press));
+			button.add_controller(button2_controller);
+			auto button3_controller = Gtk::GestureClick::create();
+			button3_controller->set_button(GDK_BUTTON_SECONDARY);
+			button3_controller->set_propagation_phase(Gtk::PropagationPhase::CAPTURE);
+			button3_controller->signal_pressed().connect(sigc::mem_fun(*this, &MosaicWindow::on_grid_button3_press));
+			button.add_controller(button3_controller);
 		}
 	}
 	reload_grid();
@@ -146,6 +156,14 @@ void MosaicWindow::set_active_color(Color color) {
 	active_color = color;
 	set_button_color(active_color_button, active_color);
 	active_color_popover.popdown();
+}
+
+void MosaicWindow::on_grid_button2_press(int n, double x, double y) {
+	cout << "on_grid_button2_press n=" << n << ", x=" << x << ", y=" << y << endl;
+}
+
+void MosaicWindow::on_grid_button3_press(int n, double x, double y) {
+	cout << "on_grid_button3_press n=" << n << ", x=" << x << ", y=" << y << endl;
 }
 
 bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state)
