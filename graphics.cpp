@@ -45,14 +45,16 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 
 	action_box.append(active_color_box);
 	active_color_box.set_orientation(Gtk::Orientation::HORIZONTAL);
-	active_color_box.set_halign(Gtk::Align::CENTER);
-	active_color_box.set_margin(2);
+	active_color_box.set_halign(Gtk::Align::FILL);
+	active_color_box.set_margin(5);
+	active_color_box.set_spacing(8);
 
 	active_color_box.append(active_color_label);
 	active_color_label.set_label("Active Color");
+	active_color_label.set_halign(Gtk::Align::START);
+	active_color_label.set_expand(true);
 
 	active_color_box.append(active_color_menu_button);
-	active_color_menu_button.set_margin(5);
 	active_color_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 	set_button_color(active_color_button, active_color);
 	active_color_menu_button.set_child(active_color_button);
@@ -71,6 +73,36 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 		set_button_color(color_selection_button, color);
 		color_selection_box.append(color_selection_button);
 	}
+
+	action_box.append(active_cell_box);
+	active_cell_box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	active_cell_box.set_halign(Gtk::Align::FILL);
+	active_cell_box.set_margin(5);
+	active_cell_box.set_spacing(8);
+
+	active_cell_box.append(active_cell_label);
+	active_cell_label.set_label("Active Cell");
+	active_cell_label.set_halign(Gtk::Align::START);
+	active_cell_label.set_expand(true);
+
+	active_cell_box.append(active_cell_button);
+	active_cell_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+	set_button_color(active_cell_button, NO_COLOR);
+
+	action_box.append(draw_text_box);
+	draw_text_box.set_sensitive(false);
+	draw_text_box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	draw_text_box.set_halign(Gtk::Align::FILL);
+	draw_text_box.set_margin(5);
+	draw_text_box.set_spacing(8);
+
+	draw_text_box.append(draw_text_label);
+	draw_text_label.set_label("Text");
+
+	draw_text_box.append(draw_text_entry);
+
+	draw_text_box.append(draw_text_button);
+	draw_text_button.set_label("Draw");
 
 	control_box.append(button_box);
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
@@ -114,7 +146,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 			auto button3_controller = Gtk::GestureClick::create();
 			button3_controller->set_button(GDK_BUTTON_SECONDARY);
 			button3_controller->set_propagation_phase(Gtk::PropagationPhase::CAPTURE);
-			button3_controller->signal_pressed().connect(sigc::mem_fun(*this, &MosaicWindow::on_grid_button3_press));
+			button3_controller->signal_pressed().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::on_grid_button3_press), y, x));
 			button.add_controller(button3_controller);
 		}
 	}
@@ -127,7 +159,11 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 }
 
 void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
-	vector<Glib::ustring> css_classes = { grid.get_color_name(color) };
+	vector<Glib::ustring> css_classes = { color == NO_COLOR ? "none" : grid.get_color_name(color) };
+	int cell_y, cell_x, width, height;
+	main_grid.query_child(button, cell_x, cell_y, width, height);
+	if (has_active_cell() && cell_y == active_cell_y && cell_x == active_cell_x || &button == &active_cell_button)
+		css_classes.push_back("active-cell");
 	button.set_css_classes(css_classes);
 }
 
@@ -158,12 +194,34 @@ void MosaicWindow::set_active_color(Color color) {
 	active_color_popover.popdown();
 }
 
+void MosaicWindow::set_active_cell(int y, int x) {
+	active_cell_y = y;
+	active_cell_x = x;
+	set_button_color(active_cell_button, has_active_cell() ? grid.get_color(y, x) : NO_COLOR);
+	draw_text_box.set_sensitive(has_active_cell());
+}
+
+bool MosaicWindow::has_active_cell() {
+	return active_cell_y >= 0 && active_cell_x >= 0;
+}
+
 void MosaicWindow::on_grid_button2_press(int n, double x, double y) {
 	cout << "on_grid_button2_press n=" << n << ", x=" << x << ", y=" << y << endl;
 }
 
-void MosaicWindow::on_grid_button3_press(int n, double x, double y) {
-	cout << "on_grid_button3_press n=" << n << ", x=" << x << ", y=" << y << endl;
+void MosaicWindow::on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x) {
+	int old_active_cell_y = active_cell_y;
+	int old_active_cell_x = active_cell_x;
+	bool old_has_active_cell = has_active_cell();
+	if (cell_y == active_cell_y && cell_x == active_cell_x) {
+		cell_y = -1;
+		cell_x = -1;
+	}
+	set_active_cell(cell_y, cell_x);
+	if (old_has_active_cell)
+		reload_grid_cell(old_active_cell_y, old_active_cell_x);
+	if (has_active_cell())
+		reload_grid_cell(active_cell_y, active_cell_x);
 }
 
 bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state)

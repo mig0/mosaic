@@ -18,6 +18,15 @@ protected:
 	Gtk::Button active_color_button;
 	Gtk::Popover active_color_popover;
 	Gtk::Box color_selection_box;
+	Gtk::Box active_cell_box;
+	Gtk::Label active_cell_label;
+	int active_cell_y = -1;
+	int active_cell_x = -1;
+	Gtk::ToggleButton active_cell_button;
+	Gtk::Box draw_text_box;
+	Gtk::Label draw_text_label;
+	Gtk::Entry draw_text_entry;
+	Gtk::Button draw_text_button;
 	Gtk::Box button_box;
 	Gtk::Button save_button;
 	Gtk::Button load_button;
@@ -30,9 +39,11 @@ protected:
 	void set_grid_cell_color(Index y, Index x, Color color);
 	void set_grid_cell_active_color(Index y, Index x);
 	void set_active_color(Color color);
+	void set_active_cell(int y, int x);
+	bool has_active_cell();
 	void set_button_color(Gtk::Widget &button, Color color);
 	void on_grid_button2_press(int n, double x, double y);
-	void on_grid_button3_press(int n, double x, double y);
+	void on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
 	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);
