@@ -14,10 +14,15 @@ protected:
 	Gtk::Box active_color_box;
 	Gtk::Label active_color_label;
 	Color active_color = Re;
+	Color active_color2 = NO_COLOR;
 	Gtk::MenuButton active_color_menu_button;
 	Gtk::Button active_color_button;
 	Gtk::Popover active_color_popover;
 	Gtk::Box color_selection_box;
+	Gtk::MenuButton active_color2_menu_button;
+	Gtk::Button active_color2_button;
+	Gtk::Popover active_color2_popover;
+	Gtk::Box color2_selection_box;
 	Gtk::Box active_cell_box;
 	Gtk::Label active_cell_label;
 	int active_cell_y = NO_INDEX;
@@ -42,6 +47,7 @@ protected:
 	void set_grid_cell_color_callback(Index y, Index x, Color color);
 	void set_grid_cell_active_color(Index y, Index x);
 	void set_active_color(Color color);
+	void set_active_color2(Color color);
 	void set_active_cell(int y, int x);
 	bool has_active_cell();
 	void on_grid_button2_press(int n, double x, double y);

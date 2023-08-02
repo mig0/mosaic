@@ -74,6 +74,26 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 		color_selection_box.append(color_selection_button);
 	}
 
+	active_color_box.append(active_color2_menu_button);
+	active_color2_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+	set_button_color(active_color2_button, active_color2);
+	active_color2_menu_button.set_child(active_color2_button);
+	active_color2_menu_button.set_always_show_arrow(true);
+
+	active_color2_menu_button.set_popover(active_color2_popover);
+	active_color2_popover.set_child(color2_selection_box);
+	color2_selection_box.set_orientation(Gtk::Orientation::VERTICAL);
+	color2_selection_box.set_halign(Gtk::Align::CENTER);
+	color2_selection_box.set_margin(0);
+	for (Color color = COLOR_FIRST; color <= NO_COLOR; color = grid.get_next_color_nowrap(color)) {
+		Gtk::Button &color_selection_button = *(new Gtk::Button);
+		color_selection_button.set_margin(3);
+		color_selection_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+		color_selection_button.signal_clicked().connect([this, color]() { set_active_color2(color); });
+		set_button_color(color_selection_button, color);
+		color2_selection_box.append(color_selection_button);
+	}
+
 	action_box.append(active_cell_box);
 	active_cell_box.set_orientation(Gtk::Orientation::HORIZONTAL);
 	active_cell_box.set_halign(Gtk::Align::FILL);
@@ -202,6 +222,12 @@ void MosaicWindow::set_active_color(Color color) {
 	active_color = color;
 	set_button_color(active_color_button, active_color);
 	active_color_popover.popdown();
+}
+
+void MosaicWindow::set_active_color2(Color color) {
+	active_color2 = color;
+	set_button_color(active_color2_button, active_color2);
+	active_color2_popover.popdown();
 }
 
 void MosaicWindow::set_active_cell(int y, int x) {
