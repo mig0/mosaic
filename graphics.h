@@ -34,15 +34,16 @@ protected:
 	Glib::RefPtr<Gtk::CssProvider> css_provider;
 	Grid &grid;
 
-	void reload_grid();
+	void set_button_color(Gtk::Widget &button, Color color);
+	void set_button_coord_tooltip(Gtk::Widget &button, Index y, Index x);
 	void reload_grid_cell(Index y, Index x);
+	void reload_grid();
 	void set_grid_cell_color(Index y, Index x, Color color);
 	void set_grid_cell_color_callback(Index y, Index x, Color color);
 	void set_grid_cell_active_color(Index y, Index x);
 	void set_active_color(Color color);
 	void set_active_cell(int y, int x);
 	bool has_active_cell();
-	void set_button_color(Gtk::Widget &button, Color color);
 	void on_grid_button2_press(int n, double x, double y);
 	void on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);

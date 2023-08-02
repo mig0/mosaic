@@ -132,12 +132,10 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 
 	for (Index y = 0; y < size_y; y++) {
 		for (Index x = 0; x < size_x; x++) {
-			ostringstream str_stream;
-			str_stream << "(" << x << ", " << y << ")";
 			Gtk::Button &button = *(new Gtk::Button);
 			main_grid.attach(button, x, y);
 			button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
-			button.set_tooltip_text(str_stream.str());
+			set_button_coord_tooltip(button, y, x);
 			button.signal_clicked().connect([this, y, x]() { set_grid_cell_active_color(y, x); });
 			auto button2_controller = Gtk::GestureClick::create();
 			button2_controller->set_button(GDK_BUTTON_MIDDLE);
@@ -167,6 +165,13 @@ void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
 	if (has_active_cell() && cell_y == active_cell_y && cell_x == active_cell_x || &button == &active_cell_button)
 		css_classes.push_back("active-cell");
 	button.set_css_classes(css_classes);
+}
+
+void MosaicWindow::set_button_coord_tooltip(Gtk::Widget &button, Index y, Index x) {
+	ostringstream str_stream;
+	if (y != (Index)-1 && x != (Index)-1)
+		str_stream << "(" << (x + 1) << ", " << (y + 1) << ")";
+	button.set_tooltip_text(str_stream.str());
 }
 
 void MosaicWindow::reload_grid_cell(Index y, Index x) {
@@ -203,6 +208,7 @@ void MosaicWindow::set_active_cell(int y, int x) {
 	active_cell_y = y;
 	active_cell_x = x;
 	set_button_color(active_cell_button, has_active_cell() ? grid.get_color(y, x) : NO_COLOR);
+	set_button_coord_tooltip(active_cell_button, y, x);
 	draw_text_box.set_sensitive(has_active_cell());
 }
 
