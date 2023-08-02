@@ -169,7 +169,7 @@ void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
 
 void MosaicWindow::set_button_coord_tooltip(Gtk::Widget &button, Index y, Index x) {
 	ostringstream str_stream;
-	if (y != (Index)-1 && x != (Index)-1)
+	if (y != NO_INDEX && x != NO_INDEX)
 		str_stream << "(" << (x + 1) << ", " << (y + 1) << ")";
 	button.set_tooltip_text(str_stream.str());
 }
@@ -225,8 +225,8 @@ void MosaicWindow::on_grid_button3_press(int n, double x, double y, Index cell_y
 	int old_active_cell_x = active_cell_x;
 	bool old_has_active_cell = has_active_cell();
 	if (cell_y == active_cell_y && cell_x == active_cell_x) {
-		cell_y = -1;
-		cell_x = -1;
+		cell_y = NO_INDEX;
+		cell_x = NO_INDEX;
 	}
 	set_active_cell(cell_y, cell_x);
 	if (old_has_active_cell)

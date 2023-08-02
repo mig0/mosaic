@@ -20,8 +20,8 @@ protected:
 	Gtk::Box color_selection_box;
 	Gtk::Box active_cell_box;
 	Gtk::Label active_cell_label;
-	int active_cell_y = -1;
-	int active_cell_x = -1;
+	int active_cell_y = NO_INDEX;
+	int active_cell_x = NO_INDEX;
 	Gtk::ToggleButton active_cell_button;
 	Gtk::Box draw_text_box;
 	Gtk::Label draw_text_label;

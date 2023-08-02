@@ -40,6 +40,7 @@ enum Step {
 
 typedef unsigned int Index;
 typedef unsigned int Size;
+constexpr Index NO_INDEX = (Index)-1;
 
 class Coord {
 	Index y;
