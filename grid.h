@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <sigc++/sigc++.h>
 #include "font3x5.h"
 using namespace std;
 
@@ -82,9 +83,12 @@ public:
 		return get_color_name(color);
 	}
 
+	sigc::signal<void(Index, Index, Color)> signal_on_set_color;
+
 	void set_color(Index y, Index x, Color color) {
 		assert_coords(y, x);
 		colors[y][x] = color;
+		signal_on_set_color.emit(y, x, color);
 	}
 
 	int min(int a, int b) {
