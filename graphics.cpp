@@ -118,8 +118,11 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 
 	draw_text_box.append(draw_text_label);
 	draw_text_label.set_label("Text");
+	draw_text_label.set_halign(Gtk::Align::START);
+	draw_text_label.set_expand(true);
 
 	draw_text_box.append(draw_text_entry);
+	draw_text_entry.set_max_length(size_x / 4 + 1);
 
 	draw_text_box.append(draw_text_button);
 	draw_text_button.set_label("Draw");
@@ -282,7 +285,7 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 }
 
 void MosaicWindow::draw_text() {
-	grid.set_text_color(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color);
+	grid.set_text_color(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color, active_color2);
 }
 
 void MosaicWindow::show_file_dialog(bool is_save) {
