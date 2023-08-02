@@ -103,6 +103,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 
 	draw_text_box.append(draw_text_button);
 	draw_text_button.set_label("Draw");
+	draw_text_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_text));
 
 	control_box.append(button_box);
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
@@ -151,6 +152,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 		}
 	}
 	reload_grid();
+	grid.signal_on_set_color.connect(sigc::mem_fun(*this, &MosaicWindow::set_grid_cell_color_callback));
 
 	auto controller = Gtk::EventControllerKey::create();
 	controller->signal_key_pressed().connect(
@@ -181,6 +183,9 @@ void MosaicWindow::reload_grid() {
 
 void MosaicWindow::set_grid_cell_color(Index y, Index x, Color color) {
 	grid.set_color(y, x, color);
+}
+
+void MosaicWindow::set_grid_cell_color_callback(Index y, Index x, Color color) {
 	reload_grid_cell(y, x);
 }
 
@@ -242,6 +247,10 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 
 	// the event has not been handled
 	return false;
+}
+
+void MosaicWindow::draw_text() {
+	grid.set_text_color(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color);
 }
 
 void MosaicWindow::show_file_dialog(bool is_save) {
