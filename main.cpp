@@ -66,6 +66,9 @@ int main(int argc, char **argv) {
 
 //	grid.set_text_rainbow_color(1, 1, "My big text", Re, Ye);
 
+//	Size size = grid.get_line_size(16, 28, 29, 8);
+//	cout << "Size between (16, 28) and (29, 8) is " << size << endl;
+
 //	grid.save("text-example.sav");
 //	if (!grid.load("unexisting-file.txt")) exit(1);
 //	if (!grid.load("main.cpp")) exit(1);

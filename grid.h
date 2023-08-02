@@ -100,6 +100,12 @@ public:
 		return a > b ? a : b;
 	}
 
+	unsigned int sqrt(unsigned int n) {
+		int k = 1;
+		for (; k * k <= n; k++);
+		return k - 1;
+	}
+
 	void set_rect_color(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
 		assert_coords(y1, x1);
 		assert_coords(y2, x2);
@@ -137,12 +143,12 @@ public:
 		Index max_y = max(y1, y2);
 		Index min_x = min(x1, x2);
 		Index max_x = max(x1, x2);
-		Size size_y = max_y - min_y + 1;
-		Size size_x = max_x - min_x + 1;
+		Size size_y = max_y - min_y;
+		Size size_x = max_x - min_x;
 		Size size_min = min(size_y, size_x);
 
 		Color color = color0;
-		for (int s = 0; s * 2 < size_min; s++) {
+		for (int s = 0; s * 2 <= size_min; s++) {
 			set_filled_rect_color(min_y + s, min_x + s, max_y - s, max_x - s, color, without_corners);
 			color = get_next_color(color);
 		}
@@ -557,6 +563,16 @@ public:
 		}
 
 		return success;
+	}
+
+	Size get_line_size(Index y1, Index x1, Index y2, Index x2) {
+		Index min_y = min(y1, y2);
+		Index max_y = max(y1, y2);
+		Index min_x = min(x1, x2);
+		Index max_x = max(x1, x2);
+		Size size_y = max_y - min_y;
+		Size size_x = max_x - min_x;
+		return sqrt(size_y * size_y + size_x * size_x);
 	}
 
 	void show() {
