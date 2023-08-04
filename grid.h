@@ -194,7 +194,7 @@ public:
 
 	void set_filled_rhomb_rainbow_color(Index y0, Index x0, Size radius, Color color0 = Re) {
 		Color color = color0;
-		for (int r = radius; r >= 0; r++) {
+		for (int r = radius; r >= 0; r--) {
 			set_rhomb_color(y0, x0, r, color);
 			color = get_next_color(color);
 		}
