@@ -4,6 +4,7 @@ enum CenterType {
 	CENTER_TYPE_OUTLINE,
 	CENTER_TYPE_RAINBOW,
 	CENTER_TYPE_FILLED,
+	CENTER_TYPE_FILLED_2,
 	CENTER_TYPE_CLOCK,
 	CENTER_TYPE_CREST,
 	CENTER_TYPE_CREST_DIAG,
@@ -14,6 +15,7 @@ vector<Glib::ustring> center_type_strings = {
 	"Outline",
 	"Rainbow",
 	"Filled",
+	"Filled 2",
 	"Clock",
 	"Crest",
 	"Crest diag",
@@ -351,6 +353,9 @@ void MosaicWindow::draw_circle() {
 		break;
 	case CENTER_TYPE_FILLED:
 		grid.set_filled_circle_color(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	case CENTER_TYPE_FILLED_2:
+		grid.set_filled_circle_2_color(active_cell_y, active_cell_x, radius, color1, color2);
 		break;
 	case CENTER_TYPE_CLOCK:
 		grid.set_clock_color(active_cell_y, active_cell_x, radius, color1, color2, color3);

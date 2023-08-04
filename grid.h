@@ -267,6 +267,11 @@ public:
 		}
 	}
 
+	void set_filled_circle_2_color(Index y0, Index x0, Size radius, Color color1, Color color2) {
+		set_filled_circle_color(y0, x0, radius, color1);
+		set_circle_color(y0, x0, radius, color2);
+	}
+
 	void set_filled_circle_rainbow_color(Index y0, Index x0, Size radius, Color color0 = Re) {
 		Color color = color0;
 		for (int r = radius; r >= 0; r--) {
