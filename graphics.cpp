@@ -1,5 +1,25 @@
 #include "graphics.h"
 
+enum CenterType {
+	CENTER_TYPE_OUTLINE,
+	CENTER_TYPE_RAINBOW,
+	CENTER_TYPE_FILLED,
+	CENTER_TYPE_CLOCK,
+	CENTER_TYPE_CREST,
+	CENTER_TYPE_CREST_DIAG,
+	CENTER_TYPE_CREST_BOTH,
+};
+
+vector<Glib::ustring> center_type_strings = {
+	"Outline",
+	"Rainbow",
+	"Filled",
+	"Clock",
+	"Crest",
+	"Crest diag",
+	"Crest both",
+};
+
 MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	ostringstream str_stream;
 	Size size_y = grid.get_size_y();
@@ -128,6 +148,31 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	draw_text_button.set_label("Draw");
 	draw_text_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_text));
 
+	action_box.append(draw_circle_box);
+	draw_circle_box.set_sensitive(false);
+	draw_circle_box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	draw_circle_box.set_halign(Gtk::Align::FILL);
+	draw_circle_box.set_margin(5);
+	draw_circle_box.set_spacing(8);
+
+	draw_circle_box.append(draw_circle_label);
+	draw_circle_label.set_label("Circle");
+	draw_circle_label.set_halign(Gtk::Align::START);
+	draw_circle_label.set_expand(true);
+
+	draw_circle_type_dropdown = Gtk::DropDown(center_type_strings);
+	draw_circle_type_dropdown.set_selected(0);
+	draw_circle_type_dropdown.set_size_request(200);
+	draw_circle_box.append(draw_circle_type_dropdown);
+
+	auto draw_circle_adj = Gtk::Adjustment::create(size_y / 4, 0, min(size_y, size_x));
+	draw_circle_radius_spin.set_adjustment(draw_circle_adj);
+	draw_circle_box.append(draw_circle_radius_spin);
+
+	draw_circle_box.append(draw_circle_button);
+	draw_circle_button.set_label("Draw");
+	draw_circle_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_circle));
+
 	control_box.append(button_box);
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
 	button_box.set_halign(Gtk::Align::CENTER);
@@ -239,6 +284,7 @@ void MosaicWindow::set_active_cell(int y, int x) {
 	set_button_color(active_cell_button, has_active_cell() ? grid.get_color(y, x) : NO_COLOR);
 	set_button_coord_tooltip(active_cell_button, y, x);
 	draw_text_box.set_sensitive(has_active_cell());
+	draw_circle_box.set_sensitive(has_active_cell());
 }
 
 bool MosaicWindow::has_active_cell() {
@@ -286,6 +332,36 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 
 void MosaicWindow::draw_text() {
 	grid.set_text_color(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color, active_color2);
+}
+
+void MosaicWindow::draw_circle() {
+	Size radius = draw_circle_radius_spin.get_value();
+	auto type = draw_circle_type_dropdown.get_selected();
+
+	Color color1 = active_color;
+	Color color2 = active_color2 != NO_COLOR ? active_color2 : color1 == Gr ? Bl : Gr;
+	Color color3 = color2 == Re ? color1 == Or ? Gr : Or : color1 == Re ? color2 == Gr ? Bl : Gr : Re;
+
+	switch (type) {
+	case CENTER_TYPE_OUTLINE:
+		grid.set_circle_color(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	case CENTER_TYPE_RAINBOW:
+		grid.set_filled_circle_rainbow_color(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	case CENTER_TYPE_FILLED:
+		grid.set_filled_circle_color(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	case CENTER_TYPE_CLOCK:
+		grid.set_clock_color(active_cell_y, active_cell_x, radius, color1, color2, color3);
+		break;
+	case CENTER_TYPE_CREST:
+	case CENTER_TYPE_CREST_DIAG:
+	case CENTER_TYPE_CREST_BOTH:
+		int axes_or_diagonal = type == CENTER_TYPE_CREST ? 1 : type == CENTER_TYPE_CREST_DIAG ? 2 : 3;
+		grid.set_circle_crest_color(active_cell_y, active_cell_x, radius, active_color, axes_or_diagonal);
+		break;
+	}
 }
 
 void MosaicWindow::show_file_dialog(bool is_save) {
