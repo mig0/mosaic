@@ -137,7 +137,11 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 
 	active_cell_box.append(active_cell_button);
 	active_cell_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
-	set_button_color(active_cell_button, NO_COLOR);
+	set_active_cell(NO_INDEX, NO_INDEX);
+
+	active_cell_box.append(active_cell2_button);
+	active_cell2_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+	set_active_cell2(NO_INDEX, NO_INDEX);
 
 	action_box.append(draw_text_box);
 	draw_text_box.set_sensitive(false);
@@ -214,7 +218,15 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 			main_grid.attach(button, x, y);
 			button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 			set_button_coord_tooltip(button, y, x);
-			button.signal_clicked().connect([this, y, x]() { set_grid_cell_active_color(y, x); });
+			button.signal_clicked().connect([this, y, x]() {
+				if (has_active_cell()) {
+					unset_active_cell2();
+					set_active_cell2(y, x);
+					reload_grid_cell(y, x);
+				} else {
+					set_grid_cell_active_color(y, x);
+				}
+			});
 			auto button2_controller = Gtk::GestureClick::create();
 			button2_controller->set_button(GDK_BUTTON_MIDDLE);
 			button2_controller->set_propagation_phase(Gtk::PropagationPhase::CAPTURE);
@@ -240,7 +252,7 @@ void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
 	vector<Glib::ustring> css_classes = { color == NO_COLOR ? "none" : grid.get_color_name(color) };
 	int cell_y, cell_x, width, height;
 	main_grid.query_child(button, cell_x, cell_y, width, height);
-	if (has_active_cell() && cell_y == active_cell_y && cell_x == active_cell_x || &button == &active_cell_button)
+	if (is_active_cell(cell_y, cell_x) || is_active_cell2(cell_y, cell_x) || &button == &active_cell_button || &button == &active_cell2_button)
 		css_classes.push_back("active-cell");
 	button.set_css_classes(css_classes);
 }
@@ -292,13 +304,51 @@ void MosaicWindow::set_active_cell(int y, int x) {
 	active_cell_y = y;
 	active_cell_x = x;
 	set_button_color(active_cell_button, has_active_cell() ? grid.get_color(y, x) : NO_COLOR);
-	set_button_coord_tooltip(active_cell_button, y, x);
+	if (has_active_cell())
+		set_button_coord_tooltip(active_cell_button, y, x);
+	else
+		active_cell_button.set_tooltip_text("Press Right mouse button to set active cell");
 	draw_text_box.set_sensitive(has_active_cell());
 	draw_circle_box.set_sensitive(has_active_cell());
+	unset_active_cell2();
+	set_active_cell2(NO_INDEX, NO_INDEX);
 }
 
 bool MosaicWindow::has_active_cell() {
 	return active_cell_y >= 0 && active_cell_x >= 0;
+}
+
+bool MosaicWindow::is_active_cell(int y, int x) {
+	return has_active_cell() && y == active_cell_y && x == active_cell_x;
+}
+
+void MosaicWindow::set_active_cell2(int y, int x) {
+	active_cell2_y = y;
+	active_cell2_x = x;
+	set_button_color(active_cell2_button, has_active_cell2() ? grid.get_color(y, x) : NO_COLOR);
+	if (has_active_cell2())
+		set_button_coord_tooltip(active_cell2_button, y, x);
+	else if (has_active_cell())
+		active_cell2_button.set_tooltip_text("Press Left mouse button to set active cell #2");
+	else
+		active_cell2_button.set_tooltip_text("Set active cell #1 by pressing Right mouse button first");
+}
+
+bool MosaicWindow::has_active_cell2() {
+	return active_cell2_y >= 0 && active_cell2_x >= 0;
+}
+
+bool MosaicWindow::is_active_cell2(int y, int x) {
+	return has_active_cell2() && y == active_cell2_y && x == active_cell2_x;
+}
+
+void MosaicWindow::unset_active_cell2() {
+	if (has_active_cell2()) {
+		int old_active_cell2_y = active_cell2_y;
+		int old_active_cell2_x = active_cell2_x;
+		set_active_cell2(NO_INDEX, NO_INDEX);
+		reload_grid_cell(old_active_cell2_y, old_active_cell2_x);
+	}
 }
 
 void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x) {

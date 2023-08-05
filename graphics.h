@@ -30,6 +30,9 @@ protected:
 	int active_cell_y = NO_INDEX;
 	int active_cell_x = NO_INDEX;
 	Gtk::ToggleButton active_cell_button;
+	int active_cell2_y = NO_INDEX;
+	int active_cell2_x = NO_INDEX;
+	Gtk::ToggleButton active_cell2_button;
 
 	Gtk::Box draw_text_box;
 	Gtk::Label draw_text_label;
@@ -60,6 +63,11 @@ protected:
 	void set_active_color2(Color color);
 	void set_active_cell(int y, int x);
 	bool has_active_cell();
+	bool is_active_cell(int y, int x);
+	void set_active_cell2(int y, int x);
+	bool has_active_cell2();
+	bool is_active_cell2(int y, int x);
+	void unset_active_cell2();
 	void on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x);
 	void on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
