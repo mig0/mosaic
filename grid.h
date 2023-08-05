@@ -300,20 +300,20 @@ public:
 	}
 
 	/* axes_or_diagonal may be 0 (no crest), 1 (axes crest), 2 (diagonal crest) or 3 (both) */
-	void set_circle_crest_color(Index y0, Index x0, Size radius, Color color, int axes_or_diagonal) {
-		set_circle_color(y0, x0, radius, color);
+	void set_circle_crest_color(Index y0, Index x0, Size radius, Color color1, Color color2, int axes_or_diagonal) {
 		if (axes_or_diagonal <= 0 || axes_or_diagonal >= 4) {
 			cout << "Ignoring invalid axes_or_diagonal argument (" << axes_or_diagonal << "), should be 1, 2 or 3" << endl;
 		}
 		if (axes_or_diagonal == 1 || axes_or_diagonal == 3) {
-			set_line_color(y0, x0 - radius, y0, x0 + radius, color);
-			set_line_color(y0 - radius, x0, y0 + radius, x0, color);
+			set_line_color(y0, x0 - radius, y0, x0 + radius, color2);
+			set_line_color(y0 - radius, x0, y0 + radius, x0, color2);
 		}
 		if (axes_or_diagonal == 2 || axes_or_diagonal == 3) {
 			Size delta = get_circle_diagonal_delta(radius);
-			set_line_color(y0 - delta, x0 - delta, y0 + delta, x0 + delta, color);
-			set_line_color(y0 - delta, x0 + delta, y0 + delta, x0 - delta, color);
+			set_line_color(y0 - delta, x0 - delta, y0 + delta, x0 + delta, color2);
+			set_line_color(y0 - delta, x0 + delta, y0 + delta, x0 - delta, color2);
 		}
+		set_circle_color(y0, x0, radius, color1);
 	}
 
 	void set_clock_color(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours = 3, unsigned int minutes = 0) {

@@ -373,7 +373,7 @@ void MosaicWindow::draw_circle() {
 	case CENTER_TYPE_CREST_BOTH:
 	{
 		int axes_or_diagonal = type == CENTER_TYPE_CREST ? 1 : type == CENTER_TYPE_CREST_DIAG ? 2 : 3;
-		grid.set_circle_crest_color(active_cell_y, active_cell_x, radius, active_color, axes_or_diagonal);
+		grid.set_circle_crest_color(active_cell_y, active_cell_x, radius, color1, color2, axes_or_diagonal);
 		break;
 	}
 	case CENTER_TYPE_RHOMB_OUTLINE:

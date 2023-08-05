@@ -45,10 +45,10 @@ int main(int argc, char **argv) {
 //	grid.set_filled_rect_rainbow_color(25, 5, 2, 20);
 //	grid.set_filled_rect_rainbow_color(25, 22, 2, 28, Bl, true);
 
-//	grid.set_circle_crest_color(10, 17, 3, Re, 2);
-//	grid.set_circle_crest_color(20, 9, 9, Gr, 5);
-//	grid.set_circle_crest_color(4, 4, 4, Bl, 2);
-//	grid.set_circle_crest_color(23, 24, 5, Or, 1);
+//	grid.set_circle_crest_color(10, 17, 3, Re, Gr, 2);
+//	grid.set_circle_crest_color(20, 9, 9, Gr, Or, 5);
+//	grid.set_circle_crest_color(4, 4, 4, Bl, Bl, 2);
+//	grid.set_circle_crest_color(23, 24, 5, Or, Bl, 1);
 
 // 	grid.set_clock_color(4, 4, 3, Re, Or, Gr);
 // 	grid.set_clock_color(15, 15, 9, Gr, Re, Or);
