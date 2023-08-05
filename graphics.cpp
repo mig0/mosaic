@@ -218,7 +218,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 			auto button2_controller = Gtk::GestureClick::create();
 			button2_controller->set_button(GDK_BUTTON_MIDDLE);
 			button2_controller->set_propagation_phase(Gtk::PropagationPhase::CAPTURE);
-			button2_controller->signal_pressed().connect(sigc::mem_fun(*this, &MosaicWindow::on_grid_button2_press));
+			button2_controller->signal_pressed().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::on_grid_button2_press), y, x));
 			button.add_controller(button2_controller);
 			auto button3_controller = Gtk::GestureClick::create();
 			button3_controller->set_button(GDK_BUTTON_SECONDARY);
@@ -301,8 +301,11 @@ bool MosaicWindow::has_active_cell() {
 	return active_cell_y >= 0 && active_cell_x >= 0;
 }
 
-void MosaicWindow::on_grid_button2_press(int n, double x, double y) {
-	cout << "on_grid_button2_press n=" << n << ", x=" << x << ", y=" << y << endl;
+void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x) {
+	if (has_active_cell()) {
+		Size new_radius = grid.get_line_size(active_cell_y, active_cell_x, cell_y, cell_x);
+		draw_circle_radius_spin.set_value(new_radius);
+	}
 }
 
 void MosaicWindow::on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x) {

@@ -60,7 +60,7 @@ protected:
 	void set_active_color2(Color color);
 	void set_active_cell(int y, int x);
 	bool has_active_cell();
-	void on_grid_button2_press(int n, double x, double y);
+	void on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x);
 	void on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
 	void draw_text();
