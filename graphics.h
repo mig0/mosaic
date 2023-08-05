@@ -45,6 +45,11 @@ protected:
 	Gtk::SpinButton draw_circle_radius_spin;
 	Gtk::Button draw_circle_button;
 
+	Gtk::Box draw_rect_box;
+	Gtk::Label draw_rect_label;
+	Gtk::DropDown draw_rect_type_dropdown;
+	Gtk::Button draw_rect_button;
+
 	Gtk::Box button_box;
 	Gtk::Button save_button;
 	Gtk::Button load_button;
@@ -73,6 +78,7 @@ protected:
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
 	void draw_text();
 	void draw_circle();
+	void draw_rect();
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
 	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);
 	void show_file_dialog(bool is_save);

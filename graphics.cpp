@@ -30,6 +30,22 @@ vector<Glib::ustring> center_type_strings = {
 	"Rhomb Rainbow",
 };
 
+enum RectType {
+	RECT_TYPE_OUTLINE,
+	RECT_TYPE_FILLED,
+	RECT_TYPE_FILLED_2,
+	RECT_TYPE_RAINBOW,
+	LINE_TYPE,
+};
+
+vector<Glib::ustring> rect_type_strings = {
+	"Rect Outline",
+	"Rect Filled",
+	"Rect Filled 2",
+	"Rect Rainbow",
+	"Line",
+};
+
 MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	ostringstream str_stream;
 	Size size_y = grid.get_size_y();
@@ -187,6 +203,27 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	draw_circle_button.set_label("Draw");
 	draw_circle_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_circle));
 
+	action_box.append(draw_rect_box);
+	draw_rect_box.set_sensitive(false);
+	draw_rect_box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	draw_rect_box.set_halign(Gtk::Align::FILL);
+	draw_rect_box.set_margin(5);
+	draw_rect_box.set_spacing(8);
+
+	draw_rect_box.append(draw_rect_label);
+	draw_rect_label.set_label("Line/Rect");
+	draw_rect_label.set_halign(Gtk::Align::START);
+	draw_rect_label.set_expand(true);
+
+	draw_rect_type_dropdown = Gtk::DropDown(rect_type_strings);
+	draw_rect_type_dropdown.set_selected(0);
+	draw_rect_type_dropdown.set_size_request(200);
+	draw_rect_box.append(draw_rect_type_dropdown);
+
+	draw_rect_box.append(draw_rect_button);
+	draw_rect_button.set_label("Draw");
+	draw_rect_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_rect));
+
 	control_box.append(button_box);
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
 	button_box.set_halign(Gtk::Align::CENTER);
@@ -332,6 +369,7 @@ void MosaicWindow::set_active_cell2(int y, int x) {
 		active_cell2_button.set_tooltip_text("Press Left mouse button to set active cell #2");
 	else
 		active_cell2_button.set_tooltip_text("Set active cell #1 by pressing Right mouse button first");
+	draw_rect_box.set_sensitive(has_active_cell2());
 }
 
 bool MosaicWindow::has_active_cell2() {
@@ -440,6 +478,31 @@ void MosaicWindow::draw_circle() {
 		break;
 	case CENTER_TYPE_RHOMB_RAINBOW:
 		grid.set_filled_rhomb_rainbow_color(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	}
+}
+
+void MosaicWindow::draw_rect() {
+	auto type = draw_rect_type_dropdown.get_selected();
+
+	Color color1 = active_color;
+	Color color2 = active_color2 != NO_COLOR ? active_color2 : color1 == Gr ? Bl : Gr;
+
+	switch (type) {
+	case RECT_TYPE_OUTLINE:
+		grid.set_rect_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
+		break;
+	case RECT_TYPE_FILLED:
+		grid.set_filled_rect_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
+		break;
+	case RECT_TYPE_FILLED_2:
+		grid.set_filled_rect_2_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, color1, color2);
+		break;
+	case RECT_TYPE_RAINBOW:
+		grid.set_filled_rect_rainbow_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
+		break;
+	case LINE_TYPE:
+		grid.set_line_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	}
 }
