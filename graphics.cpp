@@ -229,6 +229,11 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	button_box.set_halign(Gtk::Align::CENTER);
 	button_box.set_margin(2);
 
+	button_box.append(clear_button);
+	clear_button.set_label("Clear");
+	clear_button.set_margin(4);
+	clear_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::clear));
+
 	button_box.append(save_button);
 	save_button.set_label("Save");
 	save_button.set_margin(4);
@@ -537,6 +542,10 @@ void MosaicWindow::show_file_dialog(bool is_save) {
 	dialog->add_filter(filter_any);
 
 	dialog->show();
+}
+
+void MosaicWindow::clear() {
+	grid.clear();
 }
 
 void MosaicWindow::on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog) {

@@ -51,6 +51,7 @@ protected:
 	Gtk::Button draw_rect_button;
 
 	Gtk::Box button_box;
+	Gtk::Button clear_button;
 	Gtk::Button save_button;
 	Gtk::Button load_button;
 	Gtk::Button quit_button;
@@ -79,6 +80,7 @@ protected:
 	void draw_text();
 	void draw_circle();
 	void draw_rect();
+	void clear();
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
 	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);
 	void show_file_dialog(bool is_save);

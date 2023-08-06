@@ -589,8 +589,17 @@ public:
 		}
 	}
 
+	void clear() {
+		for (Index y = 0; y < size_y; y++) {
+			for (Index x = 0; x < size_x; x++) {
+				set_color(y, x, Wh);
+			}
+		}
+	}
+
 	Grid(Size size_y0, Size size_x0): size_y(size_y0), size_x(size_x0) {
 		colors = vector <vector <Color>>(size_y0, vector <Color>(size_x0));
+		clear();
 	}
 };
 
