@@ -318,8 +318,10 @@ public:
 
 	void set_clock_color(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours = 3, unsigned int minutes = 0) {
 		set_circle_color(y0, x0, radius, color1);
-		set_line_color(y0, x0, y0, x0 + radius - 1 - (int)(radius / 3), color3);
-		set_line_color(y0, x0, y0 - radius + 1 + (int)(radius / 8), x0, color2);
+		if (radius > 0) {
+			set_line_color(y0, x0, y0, x0 + radius - 1 - (int)(radius / 3), color3);
+			set_line_color(y0, x0, y0 - radius + 1 + (int)(radius / 8), x0, color2);
+		}
 	}
 
 	void set_line_color(Index y1, Index x1, Index y2, Index x2, Color color) {
