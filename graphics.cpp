@@ -330,6 +330,11 @@ void MosaicWindow::set_grid_cell_active_color(Index y, Index x) {
 	set_grid_cell_color(y, x, active_color);
 }
 
+void MosaicWindow::set_grid_cell_active_color2(Index y, Index x) {
+	if (active_color2 != NO_COLOR)
+		set_grid_cell_color(y, x, active_color2);
+}
+
 void MosaicWindow::set_active_color(Color color) {
 	active_color = color;
 	set_button_color(active_color_button, active_color);
@@ -398,6 +403,9 @@ void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y
 	if (has_active_cell()) {
 		Size new_radius = grid.get_line_size(active_cell_y, active_cell_x, cell_y, cell_x);
 		draw_circle_radius_spin.set_value(new_radius);
+	}
+	else {
+		set_grid_cell_active_color2(cell_y, cell_x);
 	}
 }
 

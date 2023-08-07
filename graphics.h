@@ -65,6 +65,7 @@ protected:
 	void set_grid_cell_color(Index y, Index x, Color color);
 	void set_grid_cell_color_callback(Index y, Index x, Color color);
 	void set_grid_cell_active_color(Index y, Index x);
+	void set_grid_cell_active_color2(Index y, Index x);
 	void set_active_color(Color color);
 	void set_active_color2(Color color);
 	void set_active_cell(int y, int x);
