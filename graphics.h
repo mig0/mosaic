@@ -54,6 +54,7 @@ protected:
 	Gtk::Button clear_button;
 	Gtk::Button save_button;
 	Gtk::Button load_button;
+	Gtk::Button about_button;
 	Gtk::Button quit_button;
 	Glib::RefPtr<Gtk::CssProvider> css_provider;
 	Grid &grid;
@@ -82,6 +83,7 @@ protected:
 	void draw_circle();
 	void draw_rect();
 
+	void show_about_dialog();
 	Gtk::MessageDialog* message_dialog = nullptr;
 	void show_message_dialog(const Glib::ustring &message, bool is_error = false);
 	void show_file_dialog(bool is_save);

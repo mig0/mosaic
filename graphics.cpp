@@ -244,6 +244,11 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	load_button.set_margin(4);
 	load_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::load));
 
+	button_box.append(about_button);
+	about_button.set_label("About");
+	about_button.set_margin(4);
+	about_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::show_about_dialog));
+
 	button_box.append(quit_button);
 	quit_button.set_label("Quit");
 	quit_button.set_margin(4);
@@ -521,6 +526,22 @@ void MosaicWindow::draw_rect() {
 		grid.set_line_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	}
+}
+
+void MosaicWindow::show_about_dialog() {
+	auto dialog = new Gtk::AboutDialog();
+
+	dialog->set_program_name("Mosaic");
+	dialog->set_version("1.0");
+	dialog->set_license_type(Gtk::License::GPL_3_0);
+	dialog->set_comments("Conveniently create nice pictores for GAN Mosaic");
+	dialog->set_website("https://github.com/mig0/mosaic/");
+	dialog->set_authors({ "Mikhael Goikhman", "Daniel Goikhman" });
+	auto logo = Gtk::MediaFile::create();
+	logo->set_filename("mosaic-logo.png");
+	dialog->set_logo(logo);
+
+	dialog->show();
 }
 
 void MosaicWindow::show_message_dialog(const Glib::ustring &message, bool is_error) {
