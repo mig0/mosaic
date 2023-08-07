@@ -333,6 +333,9 @@ void MosaicWindow::set_grid_cell_active_color(Index y, Index x) {
 void MosaicWindow::set_grid_cell_active_color2(Index y, Index x) {
 	if (active_color2 != NO_COLOR)
 		set_grid_cell_color(y, x, active_color2);
+	else
+		show_message_dialog("Please first select valid active color #2 in the menu", true);
+
 }
 
 void MosaicWindow::set_active_color(Color color) {
@@ -520,6 +523,24 @@ void MosaicWindow::draw_rect() {
 	}
 }
 
+void MosaicWindow::show_message_dialog(const Glib::ustring &message, bool is_error) {
+	if (message_dialog) {
+		auto existing_dialog = message_dialog;
+		message_dialog = nullptr;
+		delete existing_dialog;
+	}
+	auto dialog = message_dialog = new Gtk::MessageDialog(is_error ? "Error" : "Info", false, is_error ? Gtk::MessageType::ERROR : Gtk::MessageType::INFO, Gtk::ButtonsType::CLOSE);
+	dialog->set_transient_for(*this);
+	// BUG in gtkmm-4.10, this leaves the button in pressed state forever, so do not call set_modal()
+//	dialog->set_modal(true);
+	dialog->set_secondary_text(message);
+	// BUG in gtkmm-4.10, the default close response does not work, implement own response
+//	dialog->set_default_response(Gtk::ResponseType::CLOSE);
+	dialog->signal_response().connect(sigc::bind(
+		sigc::mem_fun(*this, &MosaicWindow::on_message_dialog_close), dialog));
+	dialog->show();
+}
+
 void MosaicWindow::show_file_dialog(bool is_save) {
 	auto dialog = new Gtk::FileChooserDialog(
 		"Please choose a file",
@@ -554,6 +575,11 @@ void MosaicWindow::show_file_dialog(bool is_save) {
 
 void MosaicWindow::clear() {
 	grid.clear();
+}
+
+void MosaicWindow::on_message_dialog_close(int response_id, Gtk::Dialog* dialog) {
+	message_dialog = nullptr;
+	if (dialog) delete dialog;
 }
 
 void MosaicWindow::on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog) {

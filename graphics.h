@@ -81,10 +81,14 @@ protected:
 	void draw_text();
 	void draw_circle();
 	void draw_rect();
+
+	Gtk::MessageDialog* message_dialog = nullptr;
+	void show_message_dialog(const Glib::ustring &message, bool is_error = false);
+	void show_file_dialog(bool is_save);
 	void clear();
+	void on_message_dialog_close(int response_id, Gtk::Dialog* dialog);
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
 	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);
-	void show_file_dialog(bool is_save);
 	void save() { show_file_dialog(true); }
 	void load() { show_file_dialog(false); }
 	void quit() { hide(); }
