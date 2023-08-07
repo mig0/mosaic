@@ -88,6 +88,7 @@ public:
 
 	void set_color(Index y, Index x, Color color) {
 		assert_coords(y, x);
+		assert_valid_color(color);
 		colors[y][x] = color;
 		signal_on_set_color.emit(y, x, color);
 	}
@@ -424,6 +425,14 @@ public:
 		if (!are_coords_valid(y, x)) {
 			show();
 			cout << "Bug in code, invalid coords (" << y << ", " << x << ")" << endl;
+			exit(1);
+		}
+	}
+
+	void assert_valid_color(Color color) {
+		if (!(color >= COLOR_FIRST && color <= COLOR_LAST)) {
+			show();
+			cout << "Bug in code, invalid color (" << color << ")" << endl;
 			exit(1);
 		}
 	}
