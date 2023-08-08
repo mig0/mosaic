@@ -453,7 +453,7 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 }
 
 void MosaicWindow::draw_text() {
-	grid.set_text_color(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color, active_color2);
+	grid.draw_text(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color, active_color2);
 }
 
 void MosaicWindow::draw_circle() {
@@ -466,39 +466,39 @@ void MosaicWindow::draw_circle() {
 
 	switch (type) {
 	case CIRCLE_TYPE_OUTLINE:
-		grid.set_circle_color(active_cell_y, active_cell_x, radius, active_color);
+		grid.draw_circle(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	case CIRCLE_TYPE_FILLED:
-		grid.set_filled_circle_color(active_cell_y, active_cell_x, radius, active_color);
+		grid.draw_filled_circle(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	case CIRCLE_TYPE_FILLED_2:
-		grid.set_filled_circle_2_color(active_cell_y, active_cell_x, radius, color1, color2);
+		grid.draw_filled_circle_2(active_cell_y, active_cell_x, radius, color1, color2);
 		break;
 	case CIRCLE_TYPE_RAINBOW:
-		grid.set_filled_circle_rainbow_color(active_cell_y, active_cell_x, radius, active_color);
+		grid.draw_filled_circle_rainbow(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	case CIRCLE_TYPE_CLOCK:
-		grid.set_clock_color(active_cell_y, active_cell_x, radius, color1, color2, color3);
+		grid.draw_clock(active_cell_y, active_cell_x, radius, color1, color2, color3);
 		break;
 	case CIRCLE_TYPE_CREST:
 	case CIRCLE_TYPE_CREST_DIAG:
 	case CIRCLE_TYPE_CREST_BOTH:
 	{
 		int axes_or_diagonal = type == CIRCLE_TYPE_CREST ? 1 : type == CIRCLE_TYPE_CREST_DIAG ? 2 : 3;
-		grid.set_circle_crest_color(active_cell_y, active_cell_x, radius, color1, color2, axes_or_diagonal);
+		grid.draw_circle_crest(active_cell_y, active_cell_x, radius, color1, color2, axes_or_diagonal);
 		break;
 	}
 	case CIRCLE_TYPE_RHOMB_OUTLINE:
-		grid.set_rhomb_color(active_cell_y, active_cell_x, radius, active_color);
+		grid.draw_rhomb(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	case CIRCLE_TYPE_RHOMB_FILLED:
-		grid.set_filled_rhomb_color(active_cell_y, active_cell_x, radius, active_color);
+		grid.draw_filled_rhomb(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	case CIRCLE_TYPE_RHOMB_FILLED_2:
-		grid.set_filled_rhomb_2_color(active_cell_y, active_cell_x, radius, color1, color2);
+		grid.draw_filled_rhomb_2(active_cell_y, active_cell_x, radius, color1, color2);
 		break;
 	case CIRCLE_TYPE_RHOMB_RAINBOW:
-		grid.set_filled_rhomb_rainbow_color(active_cell_y, active_cell_x, radius, active_color);
+		grid.draw_filled_rhomb_rainbow(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	}
 }
@@ -511,19 +511,19 @@ void MosaicWindow::draw_rect() {
 
 	switch (type) {
 	case RECT_TYPE_OUTLINE:
-		grid.set_rect_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
+		grid.draw_rect(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	case RECT_TYPE_FILLED:
-		grid.set_filled_rect_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
+		grid.draw_filled_rect(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	case RECT_TYPE_FILLED_2:
-		grid.set_filled_rect_2_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, color1, color2);
+		grid.draw_filled_rect_2(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, color1, color2);
 		break;
 	case RECT_TYPE_RAINBOW:
-		grid.set_filled_rect_rainbow_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
+		grid.draw_filled_rect_rainbow(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	case RECT_TYPE_LINE:
-		grid.set_line_color(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
+		grid.draw_line(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	}
 }

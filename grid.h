@@ -107,7 +107,7 @@ public:
 		return k - 1;
 	}
 
-	void set_rect_color(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
+	void draw_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
 		assert_coords(y1, x1);
 		assert_coords(y2, x2);
 
@@ -122,7 +122,7 @@ public:
 		}
 	}
 
-	void set_filled_rect_color(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
+	void draw_filled_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
 		assert_coords(y1, x1);
 		assert_coords(y2, x2);
 
@@ -134,12 +134,12 @@ public:
 		}
 	}
 
-	void set_filled_rect_2_color(Index y1, Index x1, Index y2, Index x2, Color color1, Color color2, bool without_corners = false) {
-		set_filled_rect_color(y1, x1, y2, x2, color1, without_corners);
-		set_rect_color(y1, x1, y2, x2, color2, without_corners);
+	void draw_filled_rect_2(Index y1, Index x1, Index y2, Index x2, Color color1, Color color2, bool without_corners = false) {
+		draw_filled_rect(y1, x1, y2, x2, color1, without_corners);
+		draw_rect(y1, x1, y2, x2, color2, without_corners);
 	}
 
-	void set_filled_rect_rainbow_color(Index y1, Index x1, Index y2, Index x2, Color color0 = Re, bool without_corners = false) {
+	void draw_filled_rect_rainbow(Index y1, Index x1, Index y2, Index x2, Color color0 = Re, bool without_corners = false) {
 		Index min_y = min(y1, y2);
 		Index max_y = max(y1, y2);
 		Index min_x = min(x1, x2);
@@ -150,12 +150,12 @@ public:
 
 		Color color = color0;
 		for (int s = 0; s * 2 <= size_min; s++) {
-			set_filled_rect_color(min_y + s, min_x + s, max_y - s, max_x - s, color, without_corners);
+			draw_filled_rect(min_y + s, min_x + s, max_y - s, max_x - s, color, without_corners);
 			color = get_next_color(color);
 		}
 	}
 
-	void set_rhomb_color(Index y0, Index x0, Size radius, Color color) {
+	void draw_rhomb(Index y0, Index x0, Size radius, Color color) {
 		assert_coords(y0, x0);
 
 		if (radius == 0) {
@@ -182,26 +182,26 @@ public:
 		}
 	}
 
-	void set_filled_rhomb_color(Index y0, Index x0, Size radius, Color color) {
+	void draw_filled_rhomb(Index y0, Index x0, Size radius, Color color) {
 		for (Index r = 0; r <= radius; r++) {
-			set_rhomb_color(y0, x0, r, color);
+			draw_rhomb(y0, x0, r, color);
 		}
 	}
 
-	void set_filled_rhomb_2_color(Index y0, Index x0, Size radius, Color color1, Color color2) {
-		set_filled_rhomb_color(y0, x0, radius, color1);
-		set_rhomb_color(y0, x0, radius, color2);
+	void draw_filled_rhomb_2(Index y0, Index x0, Size radius, Color color1, Color color2) {
+		draw_filled_rhomb(y0, x0, radius, color1);
+		draw_rhomb(y0, x0, radius, color2);
 	}
 
-	void set_filled_rhomb_rainbow_color(Index y0, Index x0, Size radius, Color color0 = Re) {
+	void draw_filled_rhomb_rainbow(Index y0, Index x0, Size radius, Color color0 = Re) {
 		Color color = color0;
 		for (int r = radius; r >= 0; r--) {
-			set_rhomb_color(y0, x0, r, color);
+			draw_rhomb(y0, x0, r, color);
 			color = get_next_color(color);
 		}
 	}
 
-	void set_circle_color(Index y0, Index x0, Size radius, Color color) {
+	void draw_circle(Index y0, Index x0, Size radius, Color color) {
 		assert_coords(y0, x0);
 
 		if (radius == 0) {
@@ -235,7 +235,7 @@ public:
 		}
 	}
 
-	void set_filled_circle_color(Index y0, Index x0, Size radius, Color color) {
+	void draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
 		assert_coords(y0, x0);
 
 		if (radius == 0) {
@@ -248,13 +248,13 @@ public:
 		int decesion_threashold = 3 - 2 * radius;
 
 		while (true) {
-			set_line_color(y0 + yd, x0 + xd, y0 + yd, x0 - xd, color);
+			draw_line(y0 + yd, x0 + xd, y0 + yd, x0 - xd, color);
 
-			set_line_color(y0 - yd, x0 + xd, y0 - yd, x0 - xd, color);
+			draw_line(y0 - yd, x0 + xd, y0 - yd, x0 - xd, color);
 
-			set_line_color(y0 + xd, x0 + yd, y0 + xd, x0 - yd, color);
+			draw_line(y0 + xd, x0 + yd, y0 + xd, x0 - yd, color);
 
-			set_line_color(y0 - xd, x0 + yd, y0 - xd, x0 - yd, color);
+			draw_line(y0 - xd, x0 + yd, y0 - xd, x0 - yd, color);
 
 			if (yd < xd) break;
 
@@ -268,15 +268,15 @@ public:
 		}
 	}
 
-	void set_filled_circle_2_color(Index y0, Index x0, Size radius, Color color1, Color color2) {
-		set_filled_circle_color(y0, x0, radius, color1);
-		set_circle_color(y0, x0, radius, color2);
+	void draw_filled_circle_2(Index y0, Index x0, Size radius, Color color1, Color color2) {
+		draw_filled_circle(y0, x0, radius, color1);
+		draw_circle(y0, x0, radius, color2);
 	}
 
-	void set_filled_circle_rainbow_color(Index y0, Index x0, Size radius, Color color0 = Re) {
+	void draw_filled_circle_rainbow(Index y0, Index x0, Size radius, Color color0 = Re) {
 		Color color = color0;
 		for (int r = radius; r >= 0; r--) {
-			set_filled_circle_color(y0, x0, r, color);
+			draw_filled_circle(y0, x0, r, color);
 			color = get_next_color(color);
 		}
 	}
@@ -301,31 +301,31 @@ public:
 	}
 
 	/* axes_or_diagonal may be 0 (no crest), 1 (axes crest), 2 (diagonal crest) or 3 (both) */
-	void set_circle_crest_color(Index y0, Index x0, Size radius, Color color1, Color color2, int axes_or_diagonal) {
+	void draw_circle_crest(Index y0, Index x0, Size radius, Color color1, Color color2, int axes_or_diagonal) {
 		if (axes_or_diagonal <= 0 || axes_or_diagonal >= 4) {
 			cout << "Ignoring invalid axes_or_diagonal argument (" << axes_or_diagonal << "), should be 1, 2 or 3" << endl;
 		}
 		if (axes_or_diagonal == 1 || axes_or_diagonal == 3) {
-			set_line_color(y0, x0 - radius, y0, x0 + radius, color2);
-			set_line_color(y0 - radius, x0, y0 + radius, x0, color2);
+			draw_line(y0, x0 - radius, y0, x0 + radius, color2);
+			draw_line(y0 - radius, x0, y0 + radius, x0, color2);
 		}
 		if (axes_or_diagonal == 2 || axes_or_diagonal == 3) {
 			Size delta = get_circle_diagonal_delta(radius);
-			set_line_color(y0 - delta, x0 - delta, y0 + delta, x0 + delta, color2);
-			set_line_color(y0 - delta, x0 + delta, y0 + delta, x0 - delta, color2);
+			draw_line(y0 - delta, x0 - delta, y0 + delta, x0 + delta, color2);
+			draw_line(y0 - delta, x0 + delta, y0 + delta, x0 - delta, color2);
 		}
-		set_circle_color(y0, x0, radius, color1);
+		draw_circle(y0, x0, radius, color1);
 	}
 
-	void set_clock_color(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours = 3, unsigned int minutes = 0) {
-		set_circle_color(y0, x0, radius, color1);
+	void draw_clock(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours = 3, unsigned int minutes = 0) {
+		draw_circle(y0, x0, radius, color1);
 		if (radius > 0) {
-			set_line_color(y0, x0, y0, x0 + radius - 1 - (int)(radius / 3), color3);
-			set_line_color(y0, x0, y0 - radius + 1 + (int)(radius / 8), x0, color2);
+			draw_line(y0, x0, y0, x0 + radius - 1 - (int)(radius / 3), color3);
+			draw_line(y0, x0, y0 - radius + 1 + (int)(radius / 8), x0, color2);
 		}
 	}
 
-	void set_line_color(Index y1, Index x1, Index y2, Index x2, Color color) {
+	void draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
 		assert_coords(y1, x1);
 		assert_coords(y2, x2);
 
@@ -374,7 +374,7 @@ public:
 		}
 	}
 
-	void set_char_color(Index y0, Index x0, char ch, Color fg_color, Color bg_color=NO_COLOR) {
+	void draw_char(Index y0, Index x0, char ch, Color fg_color, Color bg_color=NO_COLOR) {
 		const int *bitmap = get_font3x5_char_bitmap(ch);
 		for (int yd = -1; yd < 6; yd++) {
 			for (int xd = -1; xd < 4; xd++) {
@@ -396,22 +396,22 @@ public:
 		}
 	}
 
-	void set_text_color(Index y0, Index x0, string str, Color fg_color, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
+	void draw_text(Index y0, Index x0, string str, Color fg_color, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
 		assert_coords(y0, x0);
 
 		for (int c = 0; c < str.length(); c++) {
-			set_char_color(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
+			draw_char(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
 		}
 	}
 
-	void set_text_rainbow_color(Index y0, Index x0, string str, Color fg_color0 = Re, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
+	void draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0 = Re, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
 		Color fg_color = fg_color0;
 		assert_coords(y0, x0);
 
 		for (int c = 0; c < str.length(); c++) {
 			if (fg_color == bg_color || TEXT_RAINBOW_SKIPS_WHITE_ON_NO_BG && fg_color == Wh && bg_color == NO_COLOR)
 				fg_color = get_next_color(fg_color);
-			set_char_color(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
+			draw_char(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
 			if (str[c] != ' ' || !TEXT_RAINBOW_SKIPS_COLOR_FOR_SPACE)
 				fg_color = get_next_color(fg_color);
 		}
