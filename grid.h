@@ -325,6 +325,21 @@ public:
 		}
 	}
 
+	void draw_smile(Index y0, Index x0, Size radius, Color color1, Color color2) {
+		Color bg_color = get_color(y0, x0);
+		draw_circle(y0, x0, radius, color1);
+		if (radius > 0) {
+			draw_circle(y0 - (int)(radius / 9), x0, radius - (int)(radius / 3), color2);
+			draw_filled_rect(y0 + (int)(radius / 3), x0 - (int)(radius * 2 / 3) - 1, y0 - (int)(radius / 3), x0 + (int)(radius * 2 / 3) + 1, bg_color, true);
+			draw_filled_circle(y0 - (int)(radius / 3), x0 - (int)(radius / 3) + 1, (int)(radius / 2), bg_color);
+			draw_filled_circle(y0 - (int)(radius / 3), x0,                         (int)(radius / 2), bg_color);
+			draw_filled_circle(y0 - (int)(radius / 3), x0 + (int)(radius / 3) - 1, (int)(radius / 2), bg_color);
+			Size eye_delta = sqrt((int)(radius / 2 + 1) * (int)(radius / 2 + 1)) / 2;
+			draw_filled_circle(y0 - eye_delta, x0 - eye_delta, (int)(radius / 9), color2);
+			draw_filled_circle(y0 - eye_delta, x0 + eye_delta, (int)(radius / 9), color2);
+		}
+	}
+
 	void draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
 		assert_coords(y1, x1);
 		assert_coords(y2, x2);

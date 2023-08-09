@@ -53,6 +53,8 @@ int main(int argc, char **argv) {
 // 	grid.draw_clock(4, 4, 3, Re, Or, Gr);
 // 	grid.draw_clock(15, 15, 9, Gr, Re, Or);
 
+//	grid.draw_smile(15, 15, 10, Re, Ye);
+
 //	grid.draw_filled_circle_rainbow(15, 17, 12, Re);
 //	grid.draw_char(10, 10, 'D', Gr, Ye);
 
