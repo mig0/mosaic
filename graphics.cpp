@@ -13,6 +13,10 @@ enum CircleType {
 	CIRCLE_TYPE_RHOMB_FILLED,
 	CIRCLE_TYPE_RHOMB_FILLED_2,
 	CIRCLE_TYPE_RHOMB_RAINBOW,
+	CIRCLE_TYPE_SQUARE_OUTLINE,
+	CIRCLE_TYPE_SQUARE_FILLED,
+	CIRCLE_TYPE_SQUARE_FILLED_2,
+	CIRCLE_TYPE_SQUARE_RAINBOW,
 };
 
 vector<Glib::ustring> center_type_strings = {
@@ -28,6 +32,10 @@ vector<Glib::ustring> center_type_strings = {
 	"Rhomb Filled",
 	"Rhomb Filled 2",
 	"Rhomb Rainbow",
+	"Square Outline",
+	"Square Filled",
+	"Square Filled 2",
+	"Square Rainbow",
 };
 
 enum RectType {
@@ -499,6 +507,18 @@ void MosaicWindow::draw_circle() {
 		break;
 	case CIRCLE_TYPE_RHOMB_RAINBOW:
 		grid.draw_filled_rhomb_rainbow(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	case CIRCLE_TYPE_SQUARE_OUTLINE:
+		grid.draw_square(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	case CIRCLE_TYPE_SQUARE_FILLED:
+		grid.draw_filled_square(active_cell_y, active_cell_x, radius, active_color);
+		break;
+	case CIRCLE_TYPE_SQUARE_FILLED_2:
+		grid.draw_filled_square_2(active_cell_y, active_cell_x, radius, color1, color2);
+		break;
+	case CIRCLE_TYPE_SQUARE_RAINBOW:
+		grid.draw_filled_square_rainbow(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	}
 }

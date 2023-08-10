@@ -21,6 +21,11 @@ int main(int argc, char **argv) {
 //	grid.draw_filled_rhomb_rainbow(4, 3, 3);
 //	grid.draw_filled_rhomb_rainbow(15, 18, 10, Ye);
 
+//	grid.draw_square(12, 12, 10, Gr);
+//	grid.draw_filled_square(12, 12, 10, Gr);
+//	grid.draw_filled_square_2(12, 12, 10, Gr, Bl);
+//	grid.draw_filled_square_rainbow(12, 12, 10);
+
 //	grid.draw_circle(4, 3, 3, Re);
 //	grid.draw_circle(15, 18, 10, Ye);
 

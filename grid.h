@@ -201,6 +201,29 @@ public:
 		}
 	}
 
+	void draw_square(Index y0, Index x0, Size radius, Color color) {
+		draw_rect(y0 - radius, x0 - radius, y0 + radius, x0 + radius, color);
+	}
+
+	void draw_filled_square(Index y0, Index x0, Size radius, Color color) {
+		for (Index r = 0; r <= radius; r++) {
+			draw_square(y0, x0, r, color);
+		}
+	}
+
+	void draw_filled_square_2(Index y0, Index x0, Size radius, Color color1, Color color2) {
+		draw_filled_square(y0, x0, radius, color1);
+		draw_square(y0, x0, radius, color2);
+	}
+
+	void draw_filled_square_rainbow(Index y0, Index x0, Size radius, Color color0 = Re) {
+		Color color = color0;
+		for (int r = radius; r >= 0; r--) {
+			draw_square(y0, x0, r, color);
+			color = get_next_color(color);
+		}
+	}
+
 	void draw_circle(Index y0, Index x0, Size radius, Color color) {
 		assert_coords(y0, x0);
 
