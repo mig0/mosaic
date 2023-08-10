@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <sigc++/sigc++.h>
 #include "font3x5.h"
@@ -38,22 +39,16 @@ enum Step {
 	STEP_FORW = +1,
 };
 
-typedef unsigned int Index;
-typedef unsigned int Size;
+typedef int Index;
+typedef int Size;
 constexpr Index NO_INDEX = (Index)-1;
-
-class Coord {
-	Index y;
-	Index x;
-public:
-	Coord(Index y0, Index x0): y(y0), x(x0) {}
-	friend class Grid;
-};
 
 class Grid {
 	Size size_y;
 	Size size_x;
 	vector <vector <Color>> colors;
+	ostringstream bug;
+	Size passable_threshold;
 
 public:
 	Size get_size_y() {
@@ -87,8 +82,10 @@ public:
 	sigc::signal<void(Index, Index, Color)> signal_on_set_color;
 
 	void set_color(Index y, Index x, Color color) {
-		assert_coords(y, x);
-		assert_valid_color(color);
+		assert_coord_passable(y, x);
+		assert_color_real(color);
+		if (!is_coord_visible(y, x))
+			return;
 		colors[y][x] = color;
 		signal_on_set_color.emit(y, x, color);
 	}
@@ -108,8 +105,8 @@ public:
 	}
 
 	void draw_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
-		assert_coords(y1, x1);
-		assert_coords(y2, x2);
+		assert_coord_passable(y1, x1);
+		assert_coord_passable(y2, x2);
 
 		for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
 			for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
@@ -123,8 +120,8 @@ public:
 	}
 
 	void draw_filled_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false) {
-		assert_coords(y1, x1);
-		assert_coords(y2, x2);
+		assert_coord_passable(y1, x1);
+		assert_coord_passable(y2, x2);
 
 		for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
 			for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
@@ -156,7 +153,7 @@ public:
 	}
 
 	void draw_rhomb(Index y0, Index x0, Size radius, Color color) {
-		assert_coords(y0, x0);
+		assert_coord_visible(y0, x0);
 
 		if (radius == 0) {
 			set_color(y0, x0, color);
@@ -225,7 +222,7 @@ public:
 	}
 
 	void draw_circle(Index y0, Index x0, Size radius, Color color) {
-		assert_coords(y0, x0);
+		assert_coord_visible(y0, x0);
 
 		if (radius == 0) {
 			set_color(y0, x0, color);
@@ -259,7 +256,7 @@ public:
 	}
 
 	void draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
-		assert_coords(y0, x0);
+		assert_coord_visible(y0, x0);
 
 		if (radius == 0) {
 			set_color(y0, x0, color);
@@ -364,8 +361,8 @@ public:
 	}
 
 	void draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
-		assert_coords(y1, x1);
-		assert_coords(y2, x2);
+		assert_coord_passable(y1, x1);
+		assert_coord_passable(y2, x2);
 
 		Size y_len = abs((int)y2 - (int)y1) + 1;
 		Size x_len = abs((int)x2 - (int)x1) + 1;
@@ -418,7 +415,7 @@ public:
 			for (int xd = -1; xd < 4; xd++) {
 				Index y = y0 + yd;
 				Index x = x0 + xd;
-				if (y >= size_y || x >= size_x)
+				if (!is_coord_visible(y, x))
 					continue;
 				if (yd < 0 || yd >= 5 || xd < 0 || xd >= 5) {
 					if (bg_color != NO_COLOR)
@@ -435,7 +432,7 @@ public:
 	}
 
 	void draw_text(Index y0, Index x0, string str, Color fg_color, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
-		assert_coords(y0, x0);
+		assert_coord_visible(y0, x0);
 
 		for (int c = 0; c < str.length(); c++) {
 			draw_char(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
@@ -444,7 +441,7 @@ public:
 
 	void draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0 = Re, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0) {
 		Color fg_color = fg_color0;
-		assert_coords(y0, x0);
+		assert_coord_visible(y0, x0);
 
 		for (int c = 0; c < str.length(); c++) {
 			if (fg_color == bg_color || TEXT_RAINBOW_SKIPS_WHITE_ON_NO_BG && fg_color == Wh && bg_color == NO_COLOR)
@@ -455,23 +452,42 @@ public:
 		}
 	}
 
-	bool are_coords_valid(Index y, Index x) {
-		return y < size_y && x < size_x;
+	void exit_with_bug() {
+		show();
+		cout << "Bug in code: " << bug.str() << endl;
+		exit(1);
 	}
 
-	void assert_coords(Index y, Index x) {
-		if (!are_coords_valid(y, x)) {
-			show();
-			cout << "Bug in code, invalid coords (" << y << ", " << x << ")" << endl;
-			exit(1);
+	bool is_coord_visible(Index y, Index x) {
+		return y >= 0 && y <= size_y - 1 && x >= 0 && x <= size_x - 1;
+	}
+
+	bool is_coord_passable(Index y, Index x) {
+		return y >= 0 - passable_threshold && y <= size_y - 1 + passable_threshold && x >= 0 - passable_threshold && x <= size_x - 1 + passable_threshold;
+	}
+
+	void assert_coord_visible(Index y, Index x) {
+		if (!is_coord_visible(y, x)) {
+			bug << "invalid coords out of grid (" << y << ", " << x << ")";
+			exit_with_bug();
 		}
 	}
 
-	void assert_valid_color(Color color) {
-		if (!(color >= COLOR_FIRST && color <= COLOR_LAST)) {
-			show();
-			cout << "Bug in code, invalid color (" << color << ")" << endl;
-			exit(1);
+	void assert_coord_passable(Index y, Index x) {
+		if (!is_coord_passable(y, x)) {
+			bug << "invalid coords out of operation (" << y << ", " << x << ")";
+			exit_with_bug();
+		}
+	}
+
+	bool is_color_real(Color color) {
+		return color >= COLOR_FIRST && color <= COLOR_LAST;
+	}
+
+	void assert_color_real(Color color) {
+		if (!is_color_real(color)) {
+			bug << "invalid color (" << color << ")";
+			exit_with_bug();
 		}
 	}
 
@@ -647,7 +663,8 @@ public:
 	}
 
 	Grid(Size size_y0, Size size_x0): size_y(size_y0), size_x(size_x0) {
-		colors = vector <vector <Color>>(size_y0, vector <Color>(size_x0));
+		colors = vector <vector <Color>>(size_y, vector <Color>(size_x));
+		passable_threshold = min(size_y - 1, size_x - 1);
 		clear();
 	}
 };

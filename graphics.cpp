@@ -198,7 +198,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	draw_circle_label.set_halign(Gtk::Align::START);
 	draw_circle_label.set_expand(true);
 
-	auto draw_circle_adj = Gtk::Adjustment::create(size_y / 4, 0, min(size_y, size_x));
+	auto draw_circle_adj = Gtk::Adjustment::create(size_y / 4, 0, min(size_y - 1, size_x - 1));
 	draw_circle_radius_spin.set_adjustment(draw_circle_adj);
 	draw_circle_box.append(draw_circle_radius_spin);
 
@@ -314,7 +314,7 @@ void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
 
 void MosaicWindow::set_button_coord_tooltip(Gtk::Widget &button, Index y, Index x) {
 	ostringstream str_stream;
-	if (y != NO_INDEX && x != NO_INDEX)
+	if (grid.is_coord_visible(y, x))
 		str_stream << "(" << (x + 1) << ", " << (y + 1) << ")";
 	button.set_tooltip_text(str_stream.str());
 }
