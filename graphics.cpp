@@ -306,7 +306,10 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
 	vector<Glib::ustring> css_classes = { color == NO_COLOR ? "none" : grid.get_color_name(color) };
 	int cell_y, cell_x, width, height;
-	main_grid.query_child(button, cell_x, cell_y, width, height);
+	if (button.get_parent() == &main_grid)
+		main_grid.query_child(button, cell_x, cell_y, width, height);
+	else
+		cell_y = cell_x = NO_INDEX;
 	if (is_active_cell(cell_y, cell_x) || is_active_cell2(cell_y, cell_x) || &button == &active_cell_button || &button == &active_cell2_button)
 		css_classes.push_back("active-cell");
 	button.set_css_classes(css_classes);
@@ -348,7 +351,6 @@ void MosaicWindow::set_grid_cell_active_color2(Index y, Index x) {
 		set_grid_cell_color(y, x, active_color2);
 	else
 		show_message_dialog("Please first select valid active color #2 in the menu", true);
-
 }
 
 void MosaicWindow::set_active_color(Color color) {
