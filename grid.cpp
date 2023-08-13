@@ -53,7 +53,7 @@ int max(int a, int b) {
 unsigned int sqrt(unsigned int n) {
 	int k = 1;
 	for (; k * k <= n; k++);
-	return k - 1;
+	return (k * k - n) * 1 <= (n - (k - 1) * (k - 1)) * 2 ? k : k - 1;
 }
 
 void Grid::draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
