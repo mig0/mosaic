@@ -14,6 +14,7 @@ protected:
 
 	Gtk::Box active_color_box;
 	Gtk::Label active_color_label;
+	Gtk::DropDown rainbow_dropdown;
 	Color active_color = Re;
 	Color active_color2 = NO_COLOR;
 	Gtk::MenuButton active_color_menu_button;

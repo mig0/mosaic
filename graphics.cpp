@@ -54,6 +54,20 @@ vector<Glib::ustring> rect_type_strings = {
 	"Line",
 };
 
+vector<Glib::ustring> rainbow_type_strings = {
+	"No rainbow",
+	"Rainbow best",
+	"Concentric",
+	"Centrical 1",
+	"Centrical 2",
+	"Centrical 3",
+	"Centrical 4",
+	"Diagonal 1",
+	"Diagonal 2",
+	"Vertical",
+	"Horizontal",
+};
+
 MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	ostringstream str_stream;
 	Size size_y = grid.get_size_y();
@@ -107,6 +121,11 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	active_color_label.set_label("Active Color");
 	active_color_label.set_halign(Gtk::Align::START);
 	active_color_label.set_expand(true);
+
+	rainbow_dropdown = Gtk::DropDown(rainbow_type_strings);
+	rainbow_dropdown.set_selected(0);
+	rainbow_dropdown.set_size_request(150);
+	active_color_box.append(rainbow_dropdown);
 
 	active_color_box.append(active_color_menu_button);
 	active_color_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
@@ -463,12 +482,16 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 }
 
 void MosaicWindow::draw_text() {
+	grid.set_rainbow_type((RainbowType)rainbow_dropdown.get_selected());
+
 	grid.draw_text(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color, active_color2);
 }
 
 void MosaicWindow::draw_circle() {
 	Size radius = draw_circle_radius_spin.get_value();
 	auto type = draw_circle_type_dropdown.get_selected();
+
+	grid.set_rainbow_type((RainbowType)rainbow_dropdown.get_selected());
 
 	Color color1 = active_color;
 	Color color2 = active_color2 != NO_COLOR ? active_color2 : color1 == Gr ? Bl : Gr;
@@ -527,6 +550,8 @@ void MosaicWindow::draw_circle() {
 
 void MosaicWindow::draw_rect() {
 	auto type = draw_rect_type_dropdown.get_selected();
+
+	grid.set_rainbow_type((RainbowType)rainbow_dropdown.get_selected());
 
 	Color color1 = active_color;
 	Color color2 = active_color2 != NO_COLOR ? active_color2 : color1 == Gr ? Bl : Gr;

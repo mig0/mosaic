@@ -28,6 +28,26 @@ enum Color {
 	COLOR_LAST = NUM_COLORS - 1,
 };
 
+enum RainbowType {
+	RAINBOW_NONE,
+	RAINBOW_BEST,
+	RAINBOW_CONCENTRIC,
+	RAINBOW_CENTRICAL1,
+	RAINBOW_CENTRICAL2,
+	RAINBOW_CENTRICAL3,
+	RAINBOW_CENTRICAL4,
+	RAINBOW_DIAGONAL1,
+	RAINBOW_DIAGONAL2,
+	RAINBOW_VERTICAL,
+	RAINBOW_HORIZONTAL,
+};
+
+enum ConcentricType {
+	CONCENTRIC_CIRCLE,
+	CONCENTRIC_RHOMB,
+	CONCENTRIC_RECT,
+};
+
 enum Step {
 	STEP_BACK = -1,
 	STEP_NONE = 0,
@@ -51,7 +71,7 @@ public:
 	Color get_color(Index y, Index x);
 	const char *get_color_name(Color color);
 	string get_color_name(Index y, Index x);
-	void set_color(Index y, Index x, Color color);
+	void set_color(Index y, Index x, Color color, bool ignore_rainbow = false);
 
 	sigc::signal<void(Index, Index, Color)> signal_on_set_color;
 
@@ -106,7 +126,28 @@ public:
 
 	Grid(Size size_y0, Size size_x0);//: size_y(size_y0), size_x(size_x0);
 
+	void set_rainbow_type(RainbowType rainbow_type);
+
 protected:
+	class Rainbow {
+		RainbowType type;
+		int defined;
+		Index y1, x1, y2, x2;
+		ConcentricType concentric_type;
+
+	public:
+		Rainbow();
+		bool is_defined();
+		void define(RainbowType best_type, Index y1, Index x1, Index y2, Index x2, ConcentricType = CONCENTRIC_CIRCLE);
+		void define(RainbowType best_type, Index y0, Index x0, Size radius, ConcentricType = CONCENTRIC_CIRCLE);
+		void define_none();
+		void undefine();
+		void set_type(RainbowType type);
+		Color get_color(Color color, Index y, Index x);
+	};
+
+	Rainbow rainbow;
+
 	void exit_with_bug();
 	void assert_coord_visible(Index y, Index x);
 	void assert_coord_passable(Index y, Index x);

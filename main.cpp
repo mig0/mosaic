@@ -74,6 +74,9 @@ int main(int argc, char **argv) {
 //	Size size = grid.get_line_size(16, 28, 29, 8);
 //	cout << "Size between (16, 28) and (29, 8) is " << size << endl;
 
+//	grid.set_rainbow_type(RAINBOW_BEST);
+//	grid.draw_filled_rect(0, 0, 29, 29, Gr);
+
 	grid.draw_text_rainbow(1, 1, "Welcome to    ", Re, Ye);
 	grid.draw_text_rainbow(grid.get_size_y() - 6, 1, "Mosaic!    ", Bl, Gr, 0, 1);
 
