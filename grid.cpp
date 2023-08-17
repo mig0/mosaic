@@ -67,7 +67,7 @@ void Grid::draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
 	Step y_step = y2 > y1 ? STEP_FORW : y2 == y1 ? STEP_NONE : STEP_BACK;
 	Step x_step = x2 > x1 ? STEP_FORW : x2 == x1 ? STEP_NONE : STEP_BACK;
 
-	rainbow.define(y_len > x_len ? RAINBOW_VERTICAL : RAINBOW_HORIZONTAL, y1, x1, y2, x2, CONCENTRIC_RECT);
+	rainbow.push(y_len > x_len ? RAINBOW_VERTICAL : RAINBOW_HORIZONTAL, y1, x1, y2, x2, CONCENTRIC_RECT);
 
 	Index y = y1;
 	Index x = x1;
@@ -104,14 +104,14 @@ void Grid::draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
 		}
 	}
 
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners/* = false*/) {
 	assert_coord_passable(y1, x1);
 	assert_coord_passable(y2, x2);
 
-	rainbow.define(RAINBOW_DIAGONAL1, y1, x1, y2, x2, CONCENTRIC_RECT);
+	rainbow.push(RAINBOW_DIAGONAL1, y1, x1, y2, x2, CONCENTRIC_RECT);
 
 	for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
 		for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
@@ -123,14 +123,14 @@ void Grid::draw_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool w
 		}
 	}
 
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners/* = false*/) {
 	assert_coord_passable(y1, x1);
 	assert_coord_passable(y2, x2);
 
-	rainbow.define(RAINBOW_CONCENTRIC, y1, x1, y2, x2, CONCENTRIC_RECT);
+	rainbow.push(RAINBOW_CONCENTRIC, y1, x1, y2, x2, CONCENTRIC_RECT);
 
 	for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
 		for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
@@ -139,14 +139,14 @@ void Grid::draw_filled_rect(Index y1, Index x1, Index y2, Index x2, Color color,
 		}
 	}
 
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_rect_2(Index y1, Index x1, Index y2, Index x2, Color color1, Color color2, bool without_corners/* = false*/) {
 	draw_filled_rect(y1, x1, y2, x2, color1, without_corners);
-	rainbow.define_none();
+	rainbow.push_none();
 	draw_rect(y1, x1, y2, x2, color2, without_corners);
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_rect_rainbow(Index y1, Index x1, Index y2, Index x2, Color color0/* = Re*/, bool without_corners/* = false*/) {
@@ -158,13 +158,13 @@ void Grid::draw_filled_rect_rainbow(Index y1, Index x1, Index y2, Index x2, Colo
 	Size size_x = max_x - min_x;
 	Size size_min = min(size_y, size_x);
 
-	rainbow.define_none();
+	rainbow.push_none();
 	Color color = color0;
 	for (int s = 0; s * 2 <= size_min; s++) {
 		draw_filled_rect(min_y + s, min_x + s, max_y - s, max_x - s, color, without_corners);
 		color = get_next_color(color);
 	}
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
@@ -175,7 +175,7 @@ void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
 		return;
 	}
 
-	rainbow.define(RAINBOW_VERTICAL, y0, x0, radius);
+	rainbow.push(RAINBOW_VERTICAL, y0, x0, radius);
 
 	Index xd = 0;
 	Index yd = radius;
@@ -202,7 +202,7 @@ void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
 		}
 	}
 
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
@@ -213,7 +213,7 @@ void Grid::draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
 		return;
 	}
 
-	rainbow.define(RAINBOW_CONCENTRIC, y0, x0, radius);
+	rainbow.push(RAINBOW_CONCENTRIC, y0, x0, radius);
 
 	Index xd = 0;
 	Index yd = radius;
@@ -236,24 +236,24 @@ void Grid::draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
 		}
 	}
 
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_circle_2(Index y0, Index x0, Size radius, Color color1, Color color2) {
 	draw_filled_circle(y0, x0, radius, color1);
-	rainbow.define_none();
+	rainbow.push_none();
 	draw_circle(y0, x0, radius, color2);
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_circle_rainbow(Index y0, Index x0, Size radius, Color color0/* = Re*/) {
-	rainbow.define_none();
+	rainbow.push_none();
 	Color color = color0;
 	for (int r = radius; r >= 0; r--) {
 		draw_filled_circle(y0, x0, r, color);
 		color = get_next_color(color);
 	}
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 Size Grid::get_circle_diagonal_delta(Size radius) {
@@ -283,7 +283,7 @@ void Grid::draw_rhomb(Index y0, Index x0, Size radius, Color color) {
 		return;
 	}
 
-	rainbow.define(RAINBOW_VERTICAL, y0, x0, radius);
+	rainbow.push(RAINBOW_VERTICAL, y0, x0, radius);
 
 	for (Index q = 0; q < 4; q++) {
 		for (Index r = 0; r < radius; r++) {
@@ -303,63 +303,63 @@ void Grid::draw_rhomb(Index y0, Index x0, Size radius, Color color) {
 		}
 	}
 
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_rhomb(Index y0, Index x0, Size radius, Color color) {
-	rainbow.define(RAINBOW_CONCENTRIC, y0, x0, radius, CONCENTRIC_RHOMB);
+	rainbow.push(RAINBOW_CONCENTRIC, y0, x0, radius, CONCENTRIC_RHOMB);
 	for (Index r = 0; r <= radius; r++) {
 		draw_rhomb(y0, x0, r, color);
 	}
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_rhomb_2(Index y0, Index x0, Size radius, Color color1, Color color2) {
 	draw_filled_rhomb(y0, x0, radius, color1);
-	rainbow.define_none();
+	rainbow.push_none();
 	draw_rhomb(y0, x0, radius, color2);
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_rhomb_rainbow(Index y0, Index x0, Size radius, Color color0/* = Re*/) {
-	rainbow.define_none();
+	rainbow.push_none();
 	Color color = color0;
 	for (int r = radius; r >= 0; r--) {
 		draw_rhomb(y0, x0, r, color);
 		color = get_next_color(color);
 	}
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_square(Index y0, Index x0, Size radius, Color color) {
-	rainbow.define(RAINBOW_DIAGONAL1, y0, x0, radius);
+	rainbow.push(RAINBOW_DIAGONAL1, y0, x0, radius);
 	draw_rect(y0 - radius, x0 - radius, y0 + radius, x0 + radius, color);
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_square(Index y0, Index x0, Size radius, Color color) {
-	rainbow.define(RAINBOW_CONCENTRIC, y0, x0, radius, CONCENTRIC_RECT);
+	rainbow.push(RAINBOW_CONCENTRIC, y0, x0, radius, CONCENTRIC_RECT);
 	for (Index r = 0; r <= radius; r++) {
 		draw_square(y0, x0, r, color);
 	}
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_square_2(Index y0, Index x0, Size radius, Color color1, Color color2) {
 	draw_filled_square(y0, x0, radius, color1);
-	rainbow.define_none();
+	rainbow.push_none();
 	draw_square(y0, x0, radius, color2);
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_filled_square_rainbow(Index y0, Index x0, Size radius, Color color0/* = Re*/) {
-	rainbow.define_none();
+	rainbow.push_none();
 	Color color = color0;
 	for (int r = radius; r >= 0; r--) {
 		draw_square(y0, x0, r, color);
 		color = get_next_color(color);
 	}
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 /* axes_or_diagonal may be 0 (no crest), 1 (axes crest), 2 (diagonal crest) or 3 (both) */
@@ -367,6 +367,7 @@ void Grid::draw_circle_crest(Index y0, Index x0, Size radius, Color color1, Colo
 	if (axes_or_diagonal <= 0 || axes_or_diagonal >= 4) {
 		cout << "Ignoring invalid axes_or_diagonal argument (" << axes_or_diagonal << "), should be 1, 2 or 3" << endl;
 	}
+	rainbow.push_none();
 	if (axes_or_diagonal == 1 || axes_or_diagonal == 3) {
 		draw_line(y0, x0 - radius, y0, x0 + radius, color2);
 		draw_line(y0 - radius, x0, y0 + radius, x0, color2);
@@ -376,15 +377,18 @@ void Grid::draw_circle_crest(Index y0, Index x0, Size radius, Color color1, Colo
 		draw_line(y0 - delta, x0 - delta, y0 + delta, x0 + delta, color2);
 		draw_line(y0 - delta, x0 + delta, y0 + delta, x0 - delta, color2);
 	}
+	rainbow.pop();
 	draw_circle(y0, x0, radius, color1);
 }
 
 void Grid::draw_clock(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours/* = 3*/, unsigned int minutes/* = 0*/) {
 	draw_circle(y0, x0, radius, color1);
+	rainbow.push_none();
 	if (radius > 0) {
 		draw_line(y0, x0, y0, x0 + radius - 1 - (int)(radius / 3), color3);
 		draw_line(y0, x0, y0 - radius + 1 + (int)(radius / 8), x0, color2);
 	}
+	rainbow.pop();
 }
 
 void Grid::draw_smile(Index y0, Index x0, Size radius, Color color1, Color color2) {
@@ -429,13 +433,13 @@ void Grid::draw_text(Index y0, Index x0, string str, Color fg_color, Color bg_co
 
 	int len = str.length();
 
-	rainbow.define(RAINBOW_VERTICAL, y0, x0, y0 + (len - 1) * y_offset + 4, x0 + (len - 1) * (4 + x_offset) + 2, CONCENTRIC_RECT);
+	rainbow.push(RAINBOW_VERTICAL, y0, x0, y0 + (len - 1) * y_offset + 4, x0 + (len - 1) * (4 + x_offset) + 2, CONCENTRIC_RECT);
 
 	for (int c = 0; c < len; c++) {
 		draw_char(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
 	}
 
-	rainbow.undefine();
+	rainbow.pop();
 }
 
 void Grid::draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0/* = Re*/, Color bg_color/* = NO_COLOR*/, int y_offset/* = 0*/, int x_offset/* = 0*/) {
@@ -665,22 +669,52 @@ Grid::Grid(Size size_y0, Size size_x0): size_y(size_y0), size_x(size_x0) {
 	clear();
 }
 
-void Grid::set_rainbow_type(RainbowType rainbow_type) {
-	rainbow.set_type(rainbow_type);
+void Grid::start_rainbow(RainbowType rainbow_type) {
+	rainbow.start(rainbow_type);
 }
 
-void Grid::Rainbow::set_type(RainbowType rainbow_type) {
-	defined = 0;
-	type = rainbow_type;
+void Grid::stop_rainbow() {
+	rainbow.stop();
+}
+
+void Grid::Rainbow::exit_with_bug(const string &error) {
+	cout << "Bug in Rainbow code: " << error.c_str() << endl;
+	exit(1);
+}
+
+Grid::Rainbow::Rainbow() : started(false), defined(0) {}
+
+bool Grid::Rainbow::is_started() {
+	return started;
+}
+
+void Grid::Rainbow::start(RainbowType rainbow_type) {
+	if (is_started())
+		exit_with_bug("Can't start. Already started");
+	if (is_defined())
+		exit_with_bug("Already defined on start");
+	started = true;
+	start_type = rainbow_type;
+}
+
+void Grid::Rainbow::stop() {
+	if (!is_started())
+		exit_with_bug("Can't stop. Not started");
+	if (is_defined())
+		exit_with_bug("There are more push calls than pop calls on stop");
+	started = false;
 }
 
 bool Grid::Rainbow::is_defined() {
-	return defined > 0;
+	return started && defined > 0;
 }
 
-void Grid::Rainbow::define(RainbowType best_type, Index y1_, Index x1_, Index y2_, Index x2_, ConcentricType cc_type) {
+void Grid::Rainbow::push(RainbowType best_type, Index y1_, Index x1_, Index y2_, Index x2_, ConcentricType cc_type) {
+	if (!is_started())
+		return;
 	if (defined++)
 		return;
+	type = start_type;
 	if (type == RAINBOW_BEST)
 		type = best_type;
 	y1 = y1_;
@@ -690,31 +724,33 @@ void Grid::Rainbow::define(RainbowType best_type, Index y1_, Index x1_, Index y2
 	concentric_type = cc_type;
 }
 
-void Grid::Rainbow::define(RainbowType best_type, Index y0_, Index x0_, Size radius, ConcentricType cc_type) {
-	define(best_type, y0_ - radius, x0_ - radius, y0_ + radius, x0_ + radius, cc_type);
+void Grid::Rainbow::push(RainbowType best_type, Index y0_, Index x0_, Size radius, ConcentricType cc_type) {
+	push(best_type, y0_ - radius, x0_ - radius, y0_ + radius, x0_ + radius, cc_type);
 }
 
-void Grid::Rainbow::define_none() {
-	set_type(RAINBOW_NONE);
-	define(RAINBOW_NONE, 0, 0, 0, 0);
+void Grid::Rainbow::push_none() {
+	push(RAINBOW_NONE, 0, 0, 0, 0);
+	type = RAINBOW_NONE;
 }
 
-void Grid::Rainbow::undefine() {
-	if (defined <= 0) {
-		cerr << "Bug: more Rainbow undefine call than define calls" << endl;
-		exit(1);
-	}
-	if (!--defined)
-		type = RAINBOW_NONE;
+void Grid::Rainbow::pop() {
+	if (!is_started())
+		return;
+	if (!is_defined())
+		exit_with_bug("Can't pop. No corresponding push");
+	--defined;
 }
-
-Grid::Rainbow::Rainbow() : type(RAINBOW_NONE), defined(false) {}
 
 Color get_delta_color(Color color, int delta) {
 	return (Color)((((int)color + delta) % NUM_COLORS + NUM_COLORS) % NUM_COLORS);
 }
 
 Color Grid::Rainbow::get_color(Color color, Index y, Index x) {
+	if (!is_started())
+		exit_with_bug("Called get_color without being started");
+	if (!is_defined())
+		exit_with_bug("Called get_color without being defined");
+
 	int delta = 0;
 
 	switch (type) {

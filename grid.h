@@ -126,23 +126,29 @@ public:
 
 	Grid(Size size_y0, Size size_x0);//: size_y(size_y0), size_x(size_x0);
 
-	void set_rainbow_type(RainbowType rainbow_type);
+	void start_rainbow(RainbowType rainbow_type);
+	void stop_rainbow();
 
 protected:
 	class Rainbow {
+		bool started = false;
+		RainbowType start_type;
+		int defined = 0;
 		RainbowType type;
-		int defined;
 		Index y1, x1, y2, x2;
 		ConcentricType concentric_type;
+		void exit_with_bug(const string &error);
 
 	public:
 		Rainbow();
+		bool is_started();
+		void start(RainbowType type);
+		void stop();
 		bool is_defined();
-		void define(RainbowType best_type, Index y1, Index x1, Index y2, Index x2, ConcentricType = CONCENTRIC_CIRCLE);
-		void define(RainbowType best_type, Index y0, Index x0, Size radius, ConcentricType = CONCENTRIC_CIRCLE);
-		void define_none();
-		void undefine();
-		void set_type(RainbowType type);
+		void push(RainbowType best_type, Index y1, Index x1, Index y2, Index x2, ConcentricType = CONCENTRIC_CIRCLE);
+		void push(RainbowType best_type, Index y0, Index x0, Size radius, ConcentricType = CONCENTRIC_CIRCLE);
+		void push_none();
+		void pop();
 		Color get_color(Color color, Index y, Index x);
 	};
 

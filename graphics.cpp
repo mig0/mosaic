@@ -482,16 +482,18 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 }
 
 void MosaicWindow::draw_text() {
-	grid.set_rainbow_type((RainbowType)rainbow_dropdown.get_selected());
+	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
 	grid.draw_text(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color, active_color2);
+
+	grid.stop_rainbow();
 }
 
 void MosaicWindow::draw_circle() {
 	Size radius = draw_circle_radius_spin.get_value();
 	auto type = draw_circle_type_dropdown.get_selected();
 
-	grid.set_rainbow_type((RainbowType)rainbow_dropdown.get_selected());
+	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
 	Color color1 = active_color;
 	Color color2 = active_color2 != NO_COLOR ? active_color2 : color1 == Gr ? Bl : Gr;
@@ -546,12 +548,14 @@ void MosaicWindow::draw_circle() {
 		grid.draw_filled_square_rainbow(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	}
+
+	grid.stop_rainbow();
 }
 
 void MosaicWindow::draw_rect() {
 	auto type = draw_rect_type_dropdown.get_selected();
 
-	grid.set_rainbow_type((RainbowType)rainbow_dropdown.get_selected());
+	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
 	Color color1 = active_color;
 	Color color2 = active_color2 != NO_COLOR ? active_color2 : color1 == Gr ? Bl : Gr;
@@ -573,6 +577,8 @@ void MosaicWindow::draw_rect() {
 		grid.draw_line(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	}
+
+	grid.stop_rainbow();
 }
 
 void MosaicWindow::show_about_dialog() {
