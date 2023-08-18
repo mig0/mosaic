@@ -290,6 +290,28 @@ Size Grid::get_circle_diagonal_delta(Size radius) {
 	}
 }
 
+void Grid::get_circle_triangle_delta(Size radius, Size &yd_, Size &xd_) {
+	Index xd = 0;
+	Index yd = radius;
+	int decesion_threashold = 3 - 2 * radius;
+
+	while (true) {
+		if ((radius * 2 - yd) * (radius * 2 - yd) - 4 * xd * xd == 0 || yd < xd) {
+			yd_ = yd - 1;
+			xd_ = xd + 1;
+			return;
+		}
+
+		xd++;
+		if (decesion_threashold > 0) {
+			yd--;
+			decesion_threashold += 4 * (xd - yd) + 10;
+		} else {
+			decesion_threashold += 4 * xd + 6;
+		}
+	}
+}
+
 void Grid::draw_rhomb(Index y0, Index x0, Size radius, Color color) {
 	assert_coord_visible(y0, x0);
 

@@ -97,6 +97,7 @@ public:
 	void draw_filled_circle_2(Index y0, Index x0, Size radius, Color color1, Color color2);
 	void draw_filled_circle_rainbow(Index y0, Index x0, Size radius, Color color0 = Re);
 	Size get_circle_diagonal_delta(Size radius);
+	void get_circle_triangle_delta(Size radius, Size &yd_, Size &xd_);
 
 	void draw_rhomb(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_rhomb(Index y0, Index x0, Size radius, Color color);

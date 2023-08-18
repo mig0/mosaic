@@ -17,6 +17,8 @@ enum CircleType {
 	CIRCLE_TYPE_SQUARE_FILLED,
 	CIRCLE_TYPE_SQUARE_FILLED_2,
 	CIRCLE_TYPE_SQUARE_RAINBOW,
+	CIRCLE_TYPE_TRIANGLE,
+	CIRCLE_TYPE_TRIANGLE_FILLED,
 };
 
 vector<Glib::ustring> center_type_strings = {
@@ -36,6 +38,8 @@ vector<Glib::ustring> center_type_strings = {
 	"Square Filled",
 	"Square Filled 2",
 	"Square Rainbow",
+	"Triangle Outline",
+	"Triangle Filled",
 };
 
 enum RectType {
@@ -54,7 +58,7 @@ vector<Glib::ustring> rect_type_strings = {
 	"Rect Filled 2",
 	"Rect Rainbow",
 	"Line",
-	"Triangle",
+	"Triangle Outline",
 	"Triangle Filled",
 };
 
@@ -551,6 +555,25 @@ void MosaicWindow::draw_circle() {
 	case CIRCLE_TYPE_SQUARE_RAINBOW:
 		grid.draw_filled_square_rainbow(active_cell_y, active_cell_x, radius, active_color);
 		break;
+	case CIRCLE_TYPE_TRIANGLE:
+	case CIRCLE_TYPE_TRIANGLE_FILLED:
+		if (radius <= 1) {
+			show_message_dialog("Such 0 or 1 radius is not supported", true);
+			break;
+		}
+		Size yd, xd;
+		grid.get_circle_triangle_delta(radius, yd, xd);
+		Index y1 = active_cell_y - radius;
+		Index x1 = active_cell_x;
+		Index y2 = active_cell_y + yd;
+		Index x2 = active_cell_x + xd;
+		Index y3 = active_cell_y + yd;
+		Index x3 = active_cell_x - xd;
+		if (type == CIRCLE_TYPE_TRIANGLE)
+			grid.draw_triangle(y1, x1, y2, x2, y3, x3, active_color);
+		else
+			grid.draw_filled_triangle(y1, x1, y2, x2, y3, x3, active_color);
+		break;
 	}
 
 	grid.stop_rainbow();
@@ -581,10 +604,17 @@ void MosaicWindow::draw_rect() {
 		grid.draw_line(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	case RECT_TYPE_TRIANGLE:
-		grid.draw_triangle(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, 1, 16, active_color);
-		break;
 	case RECT_TYPE_TRIANGLE_FILLED:
-		grid.draw_filled_triangle(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, 1, 16, active_color);
+		Index y1 = max(active_cell_y, active_cell2_y);
+		Index x1 = min(active_cell_x, active_cell2_x);
+		Index y2 = max(active_cell2_y, active_cell_y);
+		Index x2 = max(active_cell2_x, active_cell_x);
+		Index y3 = min(active_cell_y, active_cell2_y);
+		Index x3 = (x1 + x2) / 2;
+		if (type == RECT_TYPE_TRIANGLE)
+			grid.draw_triangle(y1, x1, y2, x2, y3, x3, active_color);
+		else
+			grid.draw_filled_triangle(y1, x1, y2, x2, y3, x3, active_color);
 		break;
 	}
 
