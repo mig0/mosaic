@@ -182,30 +182,13 @@ void Grid::draw_filled_rect_rainbow(Index y1, Index x1, Index y2, Index x2, Colo
 	rainbow.pop();
 }
 
-void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
-	assert_coord_visible(y0, x0);
-
-	if (radius == 0) {
-		set_color(y0, x0, color);
-		return;
-	}
-
-	rainbow.push(RAINBOW_VERTICAL, y0, x0, radius);
-
+void Grid::iterate_circle_eighth(Size radius, function <bool (Index yd, Index xd)> code) {
 	Index xd = 0;
 	Index yd = radius;
 	int decesion_threashold = 3 - 2 * radius;
 
 	while (true) {
-		set_color(y0 + yd, x0 + xd, color);
-		set_color(y0 + yd, x0 - xd, color);
-		set_color(y0 - yd, x0 + xd, color);
-		set_color(y0 - yd, x0 - xd, color);
-		set_color(y0 + xd, x0 + yd, color);
-		set_color(y0 + xd, x0 - yd, color);
-		set_color(y0 - xd, x0 + yd, color);
-		set_color(y0 - xd, x0 - yd, color);
-
+		if (code(yd, xd)) break;
 		if (yd < xd) break;
 
 		xd++;
@@ -216,6 +199,29 @@ void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
 			decesion_threashold += 4 * xd + 6;
 		}
 	}
+}
+
+void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
+	assert_coord_visible(y0, x0);
+
+	if (radius == 0) {
+		set_color(y0, x0, color);
+		return;
+	}
+
+	rainbow.push(RAINBOW_VERTICAL, y0, x0, radius);
+
+	iterate_circle_eighth(radius, [=](Index yd, Index xd) {
+		set_color(y0 + yd, x0 + xd, color);
+		set_color(y0 + yd, x0 - xd, color);
+		set_color(y0 - yd, x0 + xd, color);
+		set_color(y0 - yd, x0 - xd, color);
+		set_color(y0 + xd, x0 + yd, color);
+		set_color(y0 + xd, x0 - yd, color);
+		set_color(y0 - xd, x0 + yd, color);
+		set_color(y0 - xd, x0 - yd, color);
+		return false;
+	});
 
 	rainbow.pop();
 }
@@ -230,26 +236,13 @@ void Grid::draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
 
 	rainbow.push(RAINBOW_CONCENTRIC, y0, x0, radius);
 
-	Index xd = 0;
-	Index yd = radius;
-	int decesion_threashold = 3 - 2 * radius;
-
-	while (true) {
+	iterate_circle_eighth(radius, [=](Index yd, Index xd) {
 		draw_line(y0 + yd, x0 + xd, y0 + yd, x0 - xd, color);
 		draw_line(y0 - yd, x0 + xd, y0 - yd, x0 - xd, color);
 		draw_line(y0 + xd, x0 + yd, y0 + xd, x0 - yd, color);
 		draw_line(y0 - xd, x0 + yd, y0 - xd, x0 - yd, color);
-
-		if (yd < xd) break;
-
-		xd++;
-		if (decesion_threashold > 0) {
-			yd--;
-			decesion_threashold += 4 * (xd - yd) + 10;
-		} else {
-			decesion_threashold += 4 * xd + 6;
-		}
-	}
+		return false;
+	});
 
 	rainbow.pop();
 }
@@ -272,44 +265,24 @@ void Grid::draw_filled_circle_rainbow(Index y0, Index x0, Size radius, Color col
 }
 
 Size Grid::get_circle_diagonal_delta(Size radius) {
-	Index xd = 0;
-	Index yd = radius;
-	int decesion_threashold = 3 - 2 * radius;
-
-	while (true) {
-		if (yd == xd) return xd;
-		if (yd < xd) return yd;
-
-		xd++;
-		if (decesion_threashold > 0) {
-			yd--;
-			decesion_threashold += 4 * (xd - yd) + 10;
-		} else {
-			decesion_threashold += 4 * xd + 6;
-		}
-	}
+	Size sz = 0;
+	iterate_circle_eighth(radius, [&](Index yd, Index xd) {
+		if (yd == xd) { sz = xd; return true; }
+		if (yd < xd) { sz = yd; return true; }
+		return false;
+	});
+	return sz;
 }
 
 void Grid::get_circle_triangle_delta(Size radius, Size &yd_, Size &xd_) {
-	Index xd = 0;
-	Index yd = radius;
-	int decesion_threashold = 3 - 2 * radius;
-
-	while (true) {
-		if ((radius * 2 - yd) * (radius * 2 - yd) - 4 * xd * xd == 0 || yd < xd) {
+	iterate_circle_eighth(radius, [&](Index yd, Index xd) {
+		if ((radius * 2 - yd) * (radius * 2 - yd) - 4 * xd * xd == 0) {
 			yd_ = yd - 1;
 			xd_ = xd + 1;
-			return;
+			return true;
 		}
-
-		xd++;
-		if (decesion_threashold > 0) {
-			yd--;
-			decesion_threashold += 4 * (xd - yd) + 10;
-		} else {
-			decesion_threashold += 4 * xd + 6;
-		}
-	}
+		return false;
+	});
 }
 
 void Grid::draw_rhomb(Index y0, Index x0, Size radius, Color color) {

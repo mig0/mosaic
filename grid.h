@@ -92,6 +92,7 @@ public:
 	void draw_filled_rect_2(Index y1, Index x1, Index y2, Index x2, Color color1, Color color2, bool without_corners = false);
 	void draw_filled_rect_rainbow(Index y1, Index x1, Index y2, Index x2, Color color0 = Re, bool without_corners = false);
 
+	void iterate_circle_eighth(Size radius, function <bool (Index yd, Index xd)> code);
 	void draw_circle(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_circle(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_circle_2(Index y0, Index x0, Size radius, Color color1, Color color2);
