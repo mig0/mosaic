@@ -58,12 +58,22 @@ typedef int Index;
 typedef int Size;
 constexpr Index NO_INDEX = (Index)-1;
 
+class Cell {
+public:
+	Index y;
+	Index x;
+	Color color;
+	Cell(Index y_, Index x_, Color color_): y(y_), x(x_), color(color_) {}
+};
+
 class Grid {
 	Size size_y;
 	Size size_x;
 	vector <vector <Color>> colors;
 	ostringstream bug;
 	Size passable_threshold;
+	bool is_collecting;
+	vector <shared_ptr <Cell>> collected_cells;
 
 public:
 	Size get_size_y();
@@ -126,7 +136,12 @@ public:
 	void show();
 	void clear();
 
-	Grid(Size size_y0, Size size_x0);//: size_y(size_y0), size_x(size_x0);
+	Grid(Size size_y, Size size_x);
+
+	void start_collecting();
+	void stop_collecting();
+	template <typename... Args>
+	vector <shared_ptr <Cell>> collect(void (Grid::*draw_func)(Args... args), Args... args);
 
 	void start_rainbow(RainbowType rainbow_type);
 	void stop_rainbow();

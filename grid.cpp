@@ -38,8 +38,15 @@ void Grid::set_color(Index y, Index x, Color color, bool ignore_rainbow/* = fals
 	assert_color_real(color);
 	if (!is_coord_visible(y, x))
 		return;
+
 	if (!ignore_rainbow && rainbow.is_defined())
 		color = rainbow.get_color(color, y, x);
+
+	if (is_collecting) {
+		collected_cells.push_back(make_shared <Cell>(y, x, color));
+		return;
+	}
+
 	colors[y][x] = color;
 	signal_on_set_color.emit(y, x, color);
 }
@@ -679,10 +686,27 @@ void Grid::clear() {
 	}
 }
 
-Grid::Grid(Size size_y0, Size size_x0): size_y(size_y0), size_x(size_x0) {
+Grid::Grid(Size size_y0, Size size_x0): size_y(size_y0), size_x(size_x0), is_collecting(false) {
 	colors = vector <vector <Color>>(size_y, vector <Color>(size_x));
 	passable_threshold = min(size_y - 1, size_x - 1);
 	clear();
+}
+
+void Grid::start_collecting() {
+	collected_cells.clear();
+	is_collecting = true;
+}
+
+void Grid::stop_collecting() {
+	is_collecting = false;
+}
+
+template <typename... Args>
+vector <shared_ptr <Cell>> Grid::collect(void (Grid::*draw_func)(Args... args), Args... args) {
+	start_collecting();
+	invoke(draw_func, *this, args...);
+	stop_collecting();
+	return collected_cells;
 }
 
 void Grid::start_rainbow(RainbowType rainbow_type) {
