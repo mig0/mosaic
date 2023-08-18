@@ -60,6 +60,8 @@ int main(int argc, char **argv) {
 
 //	grid.draw_smile(15, 15, 10, Re, Ye);
 
+//	grid.draw_triangle(0, 0, 1, 29, 29, 10, Gr);
+
 //	grid.draw_filled_circle_rainbow(15, 17, 12, Re);
 //	grid.draw_char(10, 10, 'D', Gr, Ye);
 

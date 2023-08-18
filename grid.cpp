@@ -48,8 +48,16 @@ int min(int a, int b) {
 	return a < b ? a : b;
 }
 
+int min(int a, int b, int c) {
+	return min(min(a, b), c);
+}
+
 int max(int a, int b) {
 	return a > b ? a : b;
+}
+
+int max(int a, int b, int c) {
+	return max(max(a, b), c);
 }
 
 unsigned int sqrt(unsigned int n) {
@@ -404,6 +412,14 @@ void Grid::draw_smile(Index y0, Index x0, Size radius, Color color1, Color color
 		draw_filled_circle(y0 - eye_delta, x0 - eye_delta, (int)(radius / 9), color2);
 		draw_filled_circle(y0 - eye_delta, x0 + eye_delta, (int)(radius / 9), color2);
 	}
+}
+
+void Grid::draw_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color) {
+	rainbow.push(RAINBOW_CONCENTRIC, min(y1, y2, y3), min(x1, x2, x3), max(y1, y2, y3), max(x1, x2, x3), CONCENTRIC_RECT);
+	draw_line(y1, x1, y2, x2, color);
+	draw_line(y2, x2, y3, x3, color);
+	draw_line(y3, x3, y1, x1, color);
+	rainbow.pop();
 }
 
 void Grid::draw_char(Index y0, Index x0, char ch, Color fg_color, Color bg_color/* = NO_COLOR*/) {

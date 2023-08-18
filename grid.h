@@ -102,6 +102,8 @@ public:
 	void draw_clock(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours = 3, unsigned int minutes = 0);
 	void draw_smile(Index y0, Index x0, Size radius, Color color1, Color color2);
 
+	void draw_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color);
+
 	void draw_char(Index y0, Index x0, char ch, Color fg_color, Color bg_color = NO_COLOR);
 	void draw_text(Index y0, Index x0, string str, Color fg_color, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0);
 	void draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0 = Re, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0);
