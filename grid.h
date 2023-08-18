@@ -113,6 +113,7 @@ public:
 	void draw_smile(Index y0, Index x0, Size radius, Color color1, Color color2);
 
 	void draw_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color);
+	void draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color);
 
 	void draw_char(Index y0, Index x0, char ch, Color fg_color, Color bg_color = NO_COLOR);
 	void draw_text(Index y0, Index x0, string str, Color fg_color, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0);

@@ -45,6 +45,7 @@ enum RectType {
 	RECT_TYPE_RAINBOW,
 	RECT_TYPE_LINE,
 	RECT_TYPE_TRIANGLE,
+	RECT_TYPE_TRIANGLE_FILLED,
 };
 
 vector<Glib::ustring> rect_type_strings = {
@@ -54,6 +55,7 @@ vector<Glib::ustring> rect_type_strings = {
 	"Rect Rainbow",
 	"Line",
 	"Triangle",
+	"Triangle Filled",
 };
 
 vector<Glib::ustring> rainbow_type_strings = {
@@ -580,6 +582,9 @@ void MosaicWindow::draw_rect() {
 		break;
 	case RECT_TYPE_TRIANGLE:
 		grid.draw_triangle(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, 1, 16, active_color);
+		break;
+	case RECT_TYPE_TRIANGLE_FILLED:
+		grid.draw_filled_triangle(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, 1, 16, active_color);
 		break;
 	}
 

@@ -429,6 +429,81 @@ void Grid::draw_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index
 	rainbow.pop();
 }
 
+void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color) {
+	rainbow.push(RAINBOW_CONCENTRIC, min(y1, y2, y3), min(x1, x2, x3), max(y1, y2, y3), max(x1, x2, x3), CONCENTRIC_RECT);
+
+	int y_top, x_top;
+	int y_mid, x_mid;
+	int y_bot, x_bot;
+
+	if (y1 < y2 && y1 < y3) {
+		y_top = y1; x_top = x1;
+		if (y2 < y3) {
+			y_mid = y2; x_mid = x2;
+			y_bot = y3; x_bot = x3;
+		} else {
+			y_mid = y3; x_mid = x3;
+			y_bot = y2; x_bot = x2;
+		}
+	} else if (y2 < y1 && y2 < y3) {
+		y_top = y2; x_top = x2;
+		if (y1 < y3) {
+			y_mid = y1; x_mid = x1;
+			y_bot = y3; x_bot = x3;
+		} else {
+			y_mid = y3; x_mid = x3;
+			y_bot = y1; x_bot = x1;
+		}
+	} else {
+		y_top = y3; x_top = x3;
+		if (y1 < y2) {
+			y_mid = y1; x_mid = x1;
+			y_bot = y2; x_bot = x2;
+		} else {
+			y_mid = y2; x_mid = x2;
+			y_bot = y1; x_bot = x1;
+		}
+	}
+
+	vector <shared_ptr <Cell>> line_top_bot_cells = collect(&Grid::draw_line, y_top, x_top, y_bot, x_bot, color);
+	vector <shared_ptr <Cell>> line_top_mid_cells = collect(&Grid::draw_line, y_top, x_top, y_mid, x_mid, color);
+	vector <shared_ptr <Cell>> line_mid_bot_cells = collect(&Grid::draw_line, y_mid, x_mid, y_bot, x_bot, color);
+
+	vector <shared_ptr <Cell>> beg_cells = line_top_bot_cells;
+	vector <shared_ptr <Cell>> end_cells = line_top_mid_cells;
+
+	Index beg_i = 0;
+	Index end_i = 0;
+	bool is_switched = false;
+
+	for (; beg_i < beg_cells.size() && end_i < end_cells.size(); beg_i++, end_i++) {
+		shared_ptr <Cell> beg = beg_cells[beg_i];
+		shared_ptr <Cell> end = end_cells[end_i];
+		if (beg->y != end->y) {
+			bug << "In draw_filled_triangle two ends of horizontal line have different y: " << beg->y << " and " << end->y;
+			exit_with_bug();
+		}
+		draw_line(beg->y, beg->x, end->y, end->x, color);
+		while (beg_i + 1 < beg_cells.size() && beg_cells[beg_i + 1]->y == beg->y) {
+			beg_i++;
+			set_color(beg_cells[beg_i]->y, beg_cells[beg_i]->x, color);
+		}
+		for (auto i : {1, 2}) {
+			if (!is_switched && end_i + 1 == end_cells.size()) {
+				is_switched = true;
+				end_cells = line_mid_bot_cells;
+				end_i = -1;
+			}
+			while (end_i + 1 < end_cells.size() && end_cells[end_i + 1]->y == beg->y) {
+				end_i++;
+				set_color(end_cells[end_i]->y, end_cells[end_i]->x, color);
+			}
+		}
+	}
+
+	rainbow.pop();
+}
+
 void Grid::draw_char(Index y0, Index x0, char ch, Color fg_color, Color bg_color/* = NO_COLOR*/) {
 	const int *bitmap = get_font3x5_char_bitmap(ch);
 	for (int yd = -1; yd < 6; yd++) {
