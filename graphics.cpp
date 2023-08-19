@@ -19,6 +19,7 @@ enum CircleType {
 	CIRCLE_TYPE_SQUARE_RAINBOW,
 	CIRCLE_TYPE_TRIANGLE,
 	CIRCLE_TYPE_TRIANGLE_FILLED,
+	CIRCLE_TYPE_TRIANGLE_FILLED_2,
 };
 
 vector<Glib::ustring> center_type_strings = {
@@ -40,6 +41,7 @@ vector<Glib::ustring> center_type_strings = {
 	"Square Rainbow",
 	"Triangle Outline",
 	"Triangle Filled",
+	"Triangle Filled 2",
 };
 
 enum RectType {
@@ -50,6 +52,7 @@ enum RectType {
 	RECT_TYPE_LINE,
 	RECT_TYPE_TRIANGLE,
 	RECT_TYPE_TRIANGLE_FILLED,
+	RECT_TYPE_TRIANGLE_FILLED_2,
 };
 
 vector<Glib::ustring> rect_type_strings = {
@@ -60,6 +63,7 @@ vector<Glib::ustring> rect_type_strings = {
 	"Line",
 	"Triangle Outline",
 	"Triangle Filled",
+	"Triangle Filled 2",
 };
 
 vector<Glib::ustring> rainbow_type_strings = {
@@ -557,6 +561,7 @@ void MosaicWindow::draw_circle() {
 		break;
 	case CIRCLE_TYPE_TRIANGLE:
 	case CIRCLE_TYPE_TRIANGLE_FILLED:
+	case CIRCLE_TYPE_TRIANGLE_FILLED_2:
 		if (radius <= 1) {
 			show_message_dialog("Such 0 or 1 radius is not supported", true);
 			break;
@@ -571,8 +576,10 @@ void MosaicWindow::draw_circle() {
 		Index x3 = active_cell_x - xd;
 		if (type == CIRCLE_TYPE_TRIANGLE)
 			grid.draw_triangle(y1, x1, y2, x2, y3, x3, active_color);
-		else
+		else if (type == CIRCLE_TYPE_TRIANGLE_FILLED)
 			grid.draw_filled_triangle(y1, x1, y2, x2, y3, x3, active_color);
+		else
+			grid.draw_filled_triangle_2(y1, x1, y2, x2, y3, x3, color1, color2);
 		break;
 	}
 
@@ -605,6 +612,7 @@ void MosaicWindow::draw_rect() {
 		break;
 	case RECT_TYPE_TRIANGLE:
 	case RECT_TYPE_TRIANGLE_FILLED:
+	case RECT_TYPE_TRIANGLE_FILLED_2:
 		Index y1 = max(active_cell_y, active_cell2_y);
 		Index x1 = min(active_cell_x, active_cell2_x);
 		Index y2 = max(active_cell2_y, active_cell_y);
@@ -613,8 +621,10 @@ void MosaicWindow::draw_rect() {
 		Index x3 = (x1 + x2) / 2;
 		if (type == RECT_TYPE_TRIANGLE)
 			grid.draw_triangle(y1, x1, y2, x2, y3, x3, active_color);
-		else
+		else if (type == RECT_TYPE_TRIANGLE_FILLED)
 			grid.draw_filled_triangle(y1, x1, y2, x2, y3, x3, active_color);
+		else
+			grid.draw_filled_triangle_2(y1, x1, y2, x2, y3, x3, color1, color2);
 		break;
 	}
 

@@ -416,21 +416,7 @@ void Grid::draw_smile(Index y0, Index x0, Size radius, Color color1, Color color
 	}
 }
 
-void Grid::draw_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color) {
-	rainbow.push(RAINBOW_CONCENTRIC, min(y1, y2, y3), min(x1, x2, x3), max(y1, y2, y3), max(x1, x2, x3), CONCENTRIC_RECT);
-	draw_line(y1, x1, y2, x2, color);
-	draw_line(y2, x2, y3, x3, color);
-	draw_line(y3, x3, y1, x1, color);
-	rainbow.pop();
-}
-
-void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color) {
-	rainbow.push(RAINBOW_CONCENTRIC, min(y1, y2, y3), min(x1, x2, x3), max(y1, y2, y3), max(x1, x2, x3), CONCENTRIC_RECT);
-
-	int y_top, x_top;
-	int y_mid, x_mid;
-	int y_bot, x_bot;
-
+void set_triangle_top_mid_bot_points(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Index &y_top, Index &x_top, Index &y_mid, Index &x_mid, Index &y_bot, Index &x_bot) {
 	if (y1 < y2 && y1 < y3) {
 		y_top = y1; x_top = x1;
 		if (y2 < y3) {
@@ -459,6 +445,26 @@ void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3
 			y_bot = y1; x_bot = x1;
 		}
 	}
+}
+
+void Grid::draw_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color) {
+	rainbow.push(RAINBOW_CONCENTRIC, min(y1, y2, y3), min(x1, x2, x3), max(y1, y2, y3), max(x1, x2, x3), CONCENTRIC_RECT);
+
+	Index y_top, x_top, y_mid, x_mid, y_bot, x_bot;
+	set_triangle_top_mid_bot_points(y1, x1, y2, x2, y3, x3, y_top, x_top, y_mid, x_mid, y_bot, x_bot);
+
+	draw_line(y_top, x_top, y_bot, x_bot, color);
+	draw_line(y_top, x_top, y_mid, x_mid, color);
+	draw_line(y_mid, x_mid, y_bot, x_bot, color);
+
+	rainbow.pop();
+}
+
+void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color) {
+	rainbow.push(RAINBOW_CONCENTRIC, min(y1, y2, y3), min(x1, x2, x3), max(y1, y2, y3), max(x1, x2, x3), CONCENTRIC_RECT);
+
+	Index y_top, x_top, y_mid, x_mid, y_bot, x_bot;
+	set_triangle_top_mid_bot_points(y1, x1, y2, x2, y3, x3, y_top, x_top, y_mid, x_mid, y_bot, x_bot);
 
 	vector <shared_ptr <Cell>> line_top_bot_cells = collect(&Grid::draw_line, y_top, x_top, y_bot, x_bot, color);
 	vector <shared_ptr <Cell>> line_top_mid_cells = collect(&Grid::draw_line, y_top, x_top, y_mid, x_mid, color);
@@ -478,6 +484,7 @@ void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3
 			bug << "In draw_filled_triangle two ends of horizontal line have different y: " << beg->y << " and " << end->y;
 			exit_with_bug();
 		}
+
 		draw_line(beg->y, beg->x, end->y, end->x, color);
 		while (beg_i + 1 < beg_cells.size() && beg_cells[beg_i + 1]->y == beg->y) {
 			beg_i++;
@@ -496,6 +503,13 @@ void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3
 		}
 	}
 
+	rainbow.pop();
+}
+
+void Grid::draw_filled_triangle_2(Index y1, Index x1, Index y2, Index x2, Index y3, Index x3, Color color1, Color color2) {
+	draw_filled_triangle(y1, x1, y2, x2, y3, x3, color1);
+	rainbow.push_none();
+	draw_triangle(y1, x1, y2, x2, y3, x3, color2);
 	rainbow.pop();
 }
 
