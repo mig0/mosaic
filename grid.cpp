@@ -801,6 +801,29 @@ void Grid::stop_rainbow() {
 	rainbow.stop();
 }
 
+bool Grid::has_undo() {
+	return !undo.empty();
+}
+
+void Grid::push_undo() {
+	undo.push_back(colors);
+}
+
+void Grid::pop_undo() {
+	if (!has_undo()) {
+		bug << "Called pop_undo with no undo levels (no corresponding push_undo)";
+		exit_with_bug();
+	}
+
+	auto undo_colors = undo.back();
+	for (Index y = 0; y < size_y; y++) {
+		for (Index x = 0; x < size_x; x++) {
+			set_color(y, x, undo_colors[y][x]);
+		}
+	}
+	undo.pop_back();
+}
+
 void Grid::Rainbow::exit_with_bug(const string &error) {
 	cout << "Bug in Rainbow code: " << error.c_str() << endl;
 	exit(1);
