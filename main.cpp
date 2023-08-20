@@ -1,7 +1,10 @@
+#include "program.h"
 #include "grid.h"
 #include "graphics.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[], char *envp[]) {
+	map <string, string> program_values = parse_options(argc, argv, envp);
+
 	Grid grid(30, 30);
 
 //	grid.set_color(20, 20, Bl);

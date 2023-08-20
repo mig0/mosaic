@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "program.h"
 
 enum CircleType {
 	CIRCLE_TYPE_OUTLINE,
@@ -635,7 +636,7 @@ void MosaicWindow::show_about_dialog() {
 	auto dialog = new Gtk::AboutDialog();
 
 	dialog->set_program_name("Mosaic");
-	dialog->set_version("1.0");
+	dialog->set_version(VERSION);
 	dialog->set_license_type(Gtk::License::GPL_3_0);
 	dialog->set_comments("Conveniently create nice pictores for GAN Mosaic");
 	dialog->set_website("https://github.com/mig0/mosaic/");
