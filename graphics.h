@@ -92,11 +92,11 @@ protected:
 	void on_message_dialog_close(int response_id, Gtk::Dialog* dialog);
 	void on_file_dialog_save(int response_id, Gtk::FileChooserDialog* dialog);
 	void on_file_dialog_load(int response_id, Gtk::FileChooserDialog* dialog);
-	void save() { show_file_dialog(true); }
-	void load() { show_file_dialog(false); }
-	void quit() { hide(); }
-	bool on_close_request() { on_hide(); return false; }
-	void on_hide() { cout << "Have a nice day!" << endl; }
+	void save();
+	void load();
+	void quit();
+	bool on_close_request();
+	void on_hide();
 
 public:
 	MosaicWindow(Grid &grid0);

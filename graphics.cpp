@@ -719,3 +719,24 @@ void MosaicWindow::on_file_dialog_load(int response_id, Gtk::FileChooserDialog* 
 	delete dialog;
 	reload_grid();
 }
+
+void MosaicWindow::save() {
+	show_file_dialog(true);
+}
+
+void MosaicWindow::load() {
+	show_file_dialog(false);
+}
+
+void MosaicWindow::quit() {
+	hide();
+}
+
+bool MosaicWindow::on_close_request() {
+	on_hide();
+	return false;
+}
+
+void MosaicWindow::on_hide() {
+	cout << "Have a nice day!" << endl;
+}
