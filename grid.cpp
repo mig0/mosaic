@@ -211,7 +211,7 @@ void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
 
 	rainbow.push(RAINBOW_VERTICAL, y0, x0, radius);
 
-	iterate_circle_eighth(radius, [=](Index yd, Index xd) {
+	iterate_circle_eighth(radius, [=, this](Index yd, Index xd) {
 		set_color(y0 + yd, x0 + xd, color);
 		set_color(y0 + yd, x0 - xd, color);
 		set_color(y0 - yd, x0 + xd, color);
@@ -236,7 +236,7 @@ void Grid::draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
 
 	rainbow.push(RAINBOW_CONCENTRIC, y0, x0, radius);
 
-	iterate_circle_eighth(radius, [=](Index yd, Index xd) {
+	iterate_circle_eighth(radius, [=, this](Index yd, Index xd) {
 		draw_line(y0 + yd, x0 + xd, y0 + yd, x0 - xd, color);
 		draw_line(y0 - yd, x0 + xd, y0 - yd, x0 - xd, color);
 		draw_line(y0 + xd, x0 + yd, y0 + xd, x0 - yd, color);
