@@ -367,6 +367,7 @@ void MosaicWindow::reload_grid() {
 }
 
 void MosaicWindow::set_grid_cell_color(Index y, Index x, Color color) {
+	grid.push_undo();
 	grid.set_color(y, x, color);
 }
 
@@ -474,19 +475,21 @@ void MosaicWindow::on_grid_button3_press(int n, double x, double y, Index cell_y
 		reload_grid_cell(active_cell_y, active_cell_x);
 }
 
-bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state)
-{
+bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state) {
 	Gdk::ModifierType modifier_mask = state & (Gdk::ModifierType::SHIFT_MASK | Gdk::ModifierType::CONTROL_MASK | Gdk::ModifierType::ALT_MASK);
 
-	if (keyval == GDK_KEY_1 && modifier_mask == Gdk::ModifierType::ALT_MASK)
-	{
+	if (keyval == GDK_KEY_1 && modifier_mask == Gdk::ModifierType::ALT_MASK) {
 		cout << "Pressed Alt-1" << endl;
 		return true;
 	}
-	else if (keyval == GDK_KEY_Escape || keyval == GDK_KEY_q && modifier_mask == Gdk::ModifierType::CONTROL_MASK || keyval == GDK_KEY_x && modifier_mask == Gdk::ModifierType::ALT_MASK)
-	{
+	else if (keyval == GDK_KEY_Escape || keyval == GDK_KEY_q && modifier_mask == Gdk::ModifierType::CONTROL_MASK || keyval == GDK_KEY_x && modifier_mask == Gdk::ModifierType::ALT_MASK) {
 		// close the window, when Escape or Ctrl-Q or Alt-X keys pressed
 		quit();
+		return true;
+	}
+	else if (keyval == GDK_KEY_z && modifier_mask == Gdk::ModifierType::CONTROL_MASK) {
+		// undo grid changes, when Ctrl-Z pressed
+		undo();
 		return true;
 	}
 
@@ -495,6 +498,8 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 }
 
 void MosaicWindow::draw_text() {
+	grid.push_undo();
+
 	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
 	grid.draw_text(active_cell_y, active_cell_x, draw_text_entry.get_text(), active_color, active_color2);
@@ -505,6 +510,8 @@ void MosaicWindow::draw_text() {
 void MosaicWindow::draw_circle() {
 	Size radius = draw_circle_radius_spin.get_value();
 	auto type = draw_circle_type_dropdown.get_selected();
+
+	grid.push_undo();
 
 	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
@@ -589,6 +596,8 @@ void MosaicWindow::draw_circle() {
 
 void MosaicWindow::draw_rect() {
 	auto type = draw_rect_type_dropdown.get_selected();
+
+	grid.push_undo();
 
 	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
@@ -699,6 +708,7 @@ void MosaicWindow::show_file_dialog(bool is_save) {
 }
 
 void MosaicWindow::clear() {
+	grid.push_undo();
 	grid.clear();
 }
 
@@ -725,6 +735,7 @@ void MosaicWindow::save() {
 }
 
 void MosaicWindow::load() {
+	grid.push_undo();
 	show_file_dialog(false);
 }
 
@@ -739,4 +750,11 @@ bool MosaicWindow::on_close_request() {
 
 void MosaicWindow::on_hide() {
 	cout << "Have a nice day!" << endl;
+}
+
+void MosaicWindow::undo() {
+	if (grid.has_undo())
+		grid.pop_undo();
+	else
+		show_message_dialog("No more undo layers available", true);
 }

@@ -97,6 +97,7 @@ protected:
 	void quit();
 	bool on_close_request();
 	void on_hide();
+	void undo();
 
 public:
 	MosaicWindow(Grid &grid0);
