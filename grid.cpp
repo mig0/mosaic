@@ -3,7 +3,16 @@
 
 //#define NAIVE_LINE_ALGORYTHM 1
 bool const TEXT_RAINBOW_SKIPS_COLOR_FOR_SPACE = true;
-bool const TEXT_RAINBOW_SKIPS_WHITE_ON_NO_BG = true;
+
+Grid::Grid(Size size_y_, Size size_x_) : Grid(size_y_, size_x_, Wh) {
+}
+
+Grid::Grid(Size size_y_, Size size_x_, Color bg_color_) : size_y(size_y_), size_x(size_x_), bg_color(bg_color_), is_collecting(false) {
+	colors = vector <vector <Color>>(size_y, vector <Color>(size_x));
+	assert_color_real(bg_color);
+	passable_threshold = min(size_y - 1, size_x - 1);
+	clear();
+}
 
 Size Grid::get_size_y() {
 	return size_y;
@@ -554,7 +563,7 @@ void Grid::draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0/* =
 	assert_coord_visible(y0, x0);
 
 	for (int c = 0; c < str.length(); c++) {
-		if (fg_color == bg_color || TEXT_RAINBOW_SKIPS_WHITE_ON_NO_BG && fg_color == Wh && bg_color == NO_COLOR)
+		if (fg_color == bg_color || fg_color == this->bg_color && bg_color == NO_COLOR)
 			fg_color = get_next_color(fg_color);
 		draw_char(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
 		if (str[c] != ' ' || !TEXT_RAINBOW_SKIPS_COLOR_FOR_SPACE)
@@ -765,15 +774,19 @@ void Grid::show() {
 void Grid::clear() {
 	for (Index y = 0; y < size_y; y++) {
 		for (Index x = 0; x < size_x; x++) {
-			set_color(y, x, Wh);
+			set_color(y, x, bg_color);
 		}
 	}
 }
 
-Grid::Grid(Size size_y0, Size size_x0): size_y(size_y0), size_x(size_x0), is_collecting(false) {
-	colors = vector <vector <Color>>(size_y, vector <Color>(size_x));
-	passable_threshold = min(size_y - 1, size_x - 1);
-	clear();
+bool Grid::is_clear() {
+	for (Index y = 0; y < size_y; y++) {
+		for (Index x = 0; x < size_x; x++) {
+			if (get_color(y, x) != bg_color)
+				return false;
+		}
+	}
+	return true;
 }
 
 void Grid::start_collecting() {

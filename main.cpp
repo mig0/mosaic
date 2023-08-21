@@ -89,7 +89,7 @@ int main(int argc, char *argv[], char *envp[]) {
 //	grid.pop_undo();
 
 	grid.push_undo();
-	grid.draw_text_rainbow(1, 1, "Welcome to    ", Re, Ye);
+	grid.draw_text_rainbow(1, 1, "Welcome to    ", Re);
 	grid.draw_text_rainbow(grid.get_size_y() - 6, 1, "Mosaic!    ", Bl, Gr, 0, 1);
 
 //	grid.save("text-example.sav");

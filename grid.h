@@ -69,6 +69,7 @@ public:
 class Grid {
 	Size size_y;
 	Size size_x;
+	Color bg_color;
 	vector <vector <Color>> colors;
 	ostringstream bug;
 	Size passable_threshold;
@@ -77,6 +78,9 @@ class Grid {
 	vector <vector <vector <Color>>> undo;
 
 public:
+	Grid(Size size_y, Size size_x);
+	Grid(Size size_y, Size size_x, Color bg_color);
+
 	Size get_size_y();
 	Size get_size_x();
 	Color get_color(Index y, Index x);
@@ -140,8 +144,7 @@ public:
 
 	void show();
 	void clear();
-
-	Grid(Size size_y, Size size_x);
+	bool is_clear();
 
 	void start_collecting();
 	void stop_collecting();
