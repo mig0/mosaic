@@ -75,7 +75,8 @@ class Grid {
 	Size passable_threshold;
 	bool is_collecting;
 	vector <shared_ptr <Cell>> collected_cells;
-	vector <vector <vector <Color>>> undo;
+	vector <vector <vector <Color>>> undo_layers;
+	vector <vector <vector <Color>>> redo_layers;
 
 public:
 	Grid(Size size_y, Size size_x);
@@ -156,7 +157,9 @@ public:
 
 	bool has_undo();
 	void push_undo();
-	void pop_undo();
+	void undo();
+	bool has_redo();
+	void redo();
 
 protected:
 	class Rainbow {

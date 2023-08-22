@@ -492,6 +492,11 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 		undo();
 		return true;
 	}
+	else if (keyval == GDK_KEY_y && modifier_mask == Gdk::ModifierType::CONTROL_MASK) {
+		// redo grid changes, when Ctrl-Y pressed
+		redo();
+		return true;
+	}
 
 	// the event has not been handled
 	return false;
@@ -754,7 +759,14 @@ void MosaicWindow::on_hide() {
 
 void MosaicWindow::undo() {
 	if (grid.has_undo())
-		grid.pop_undo();
+		grid.undo();
 	else
 		show_message_dialog("No more undo layers available", true);
+}
+
+void MosaicWindow::redo() {
+	if (grid.has_redo())
+		grid.redo();
+	else
+		show_message_dialog("No redo layers available", true);
 }

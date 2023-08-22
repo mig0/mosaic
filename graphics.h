@@ -98,6 +98,7 @@ protected:
 	bool on_close_request();
 	void on_hide();
 	void undo();
+	void redo();
 
 public:
 	MosaicWindow(Grid &grid0);

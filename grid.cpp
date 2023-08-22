@@ -815,26 +815,52 @@ void Grid::stop_rainbow() {
 }
 
 bool Grid::has_undo() {
-	return !undo.empty();
+	return !undo_layers.empty();
 }
 
 void Grid::push_undo() {
-	undo.push_back(colors);
+	if (undo_layers.empty() || colors != undo_layers.back()) {
+		undo_layers.push_back(colors);
+		redo_layers.clear();
+	}
 }
 
-void Grid::pop_undo() {
+void Grid::undo() {
 	if (!has_undo()) {
-		bug << "Called pop_undo with no undo levels (no corresponding push_undo)";
+		bug << "Called undo without undo layers (no corresponding push_undo or redo calls)";
 		exit_with_bug();
 	}
 
-	auto undo_colors = undo.back();
+	auto last_pushed_colors = undo_layers.back();
+	if (colors != last_pushed_colors)
+		redo_layers.push_back(colors);
 	for (Index y = 0; y < size_y; y++) {
 		for (Index x = 0; x < size_x; x++) {
-			set_color(y, x, undo_colors[y][x]);
+			set_color(y, x, last_pushed_colors[y][x]);
 		}
 	}
-	undo.pop_back();
+	undo_layers.pop_back();
+}
+
+bool Grid::has_redo() {
+	return !redo_layers.empty();
+}
+
+void Grid::redo() {
+	if (!has_redo()) {
+		bug << "Called redo without redo layers (no corresponding undo calls)";
+		exit_with_bug();
+	}
+
+	if (undo_layers.empty() || colors != undo_layers.back())
+		undo_layers.push_back(colors);
+	auto last_undone_colors = redo_layers.back();
+	for (Index y = 0; y < size_y; y++) {
+		for (Index x = 0; x < size_x; x++) {
+			set_color(y, x, last_undone_colors[y][x]);
+		}
+	}
+	redo_layers.pop_back();
 }
 
 void Grid::Rainbow::exit_with_bug(const string &error) {
