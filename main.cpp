@@ -83,6 +83,11 @@ int main(int argc, char *argv[], char *envp[]) {
 //	grid.draw_filled_rect(0, 0, 29, 29, Gr);
 //	grid.stop_rainbow();
 
+//	grid.save("text-example.sav");
+//	if (!grid.load("unexisting-file.txt")) exit(1);
+//	if (!grid.load("main.cpp")) exit(1);
+//	grid.load("text-example.sav");
+
 //	grid.push_undo();
 //	grid.draw_smile(15, 15, 10, Re, Ye);
 // 	grid.draw_clock(4, 4, 3, Re, Or, Gr);
@@ -92,10 +97,10 @@ int main(int argc, char *argv[], char *envp[]) {
 	grid.draw_text_rainbow(1, 1, "Welcome to    ", Re);
 	grid.draw_text_rainbow(grid.get_size_y() - 6, 1, "Mosaic!    ", Bl, Gr, 0, 1);
 
-//	grid.save("text-example.sav");
-//	if (!grid.load("unexisting-file.txt")) exit(1);
-//	if (!grid.load("main.cpp")) exit(1);
-//	grid.load("text-example.sav");
+	if (initial_sav_filename) {
+		grid.push_undo();
+		grid.load(initial_sav_filename);
+	}
 
 	auto app = Gtk::Application::create("Migo.Mosaic");
 	if (preferences["new-instance"])

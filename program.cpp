@@ -1,6 +1,9 @@
 #include "program.h"
 #include <iostream>
 #include <getopt.h>
+#include <unistd.h>
+
+const char *initial_sav_filename = NULL;
 
 bool parse_size(char *str, int &size_x, int &size_y) {
 	if (str == nullptr)
@@ -93,6 +96,11 @@ Options:
 		cerr << "Requested size " << size_x << 'x' << size_y << " is too large" << endl;
 		exit(1);
 	}
+
+	if (access(getenv("MOSAIC_LOAD"), R_OK) == 0)
+		initial_sav_filename = getenv("MOSAIC_LOAD");
+	if (argc >= 2 && access(argv[1], R_OK) == 0)
+		initial_sav_filename = argv[1];
 
 	argc = 0;  // don't allow anyone else to parse options
 
