@@ -10,6 +10,11 @@ protected:
 	Gtk::Grid main_grid;
 	Gtk::Frame control_frame;
 	Gtk::Box control_box;
+
+	Gtk::Box mini_button_box;
+	Gtk::Button undo_button;
+	Gtk::Button redo_button;
+
 	Gtk::Box action_box;
 
 	Gtk::Box active_color_box;
@@ -57,9 +62,11 @@ protected:
 	Gtk::Button load_button;
 	Gtk::Button about_button;
 	Gtk::Button quit_button;
+
 	Glib::RefPtr<Gtk::CssProvider> css_provider;
 	Grid &grid;
 
+	void set_undo_redo_sensitive_callback(bool has_undo, bool has_redo);
 	void set_button_color(Gtk::Widget &button, Color color);
 	void set_button_coord_tooltip(Gtk::Widget &button, Index y, Index x);
 	void reload_grid_cell(Index y, Index x);

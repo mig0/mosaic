@@ -118,6 +118,23 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	control_box.set_valign(Gtk::Align::FILL);
 	control_box.set_margin(10);
 
+	control_box.append(mini_button_box);
+	mini_button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	mini_button_box.set_halign(Gtk::Align::CENTER);
+	mini_button_box.set_margin(2);
+
+	mini_button_box.append(undo_button);
+	undo_button.set_icon_name("edit-undo");
+	undo_button.set_tooltip_text("Undo changes");
+	undo_button.set_margin(4);
+	undo_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::undo));
+
+	mini_button_box.append(redo_button);
+	redo_button.set_icon_name("edit-redo");
+	redo_button.set_tooltip_text("Redo changes");
+	redo_button.set_margin(4);
+	redo_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::redo));
+
 	control_box.append(action_box);
 	action_box.set_orientation(Gtk::Orientation::VERTICAL);
 	action_box.set_valign(Gtk::Align::START);
@@ -328,11 +345,18 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	}
 	reload_grid();
 	grid.signal_on_set_color.connect(sigc::mem_fun(*this, &MosaicWindow::set_grid_cell_color_callback));
+	grid.signal_on_change_undo_redo.connect(sigc::mem_fun(*this, &MosaicWindow::set_undo_redo_sensitive_callback));
+	set_undo_redo_sensitive_callback(grid.has_undo(), grid.has_redo());
 
 	auto controller = Gtk::EventControllerKey::create();
 	controller->signal_key_pressed().connect(
 		sigc::mem_fun(*this, &MosaicWindow::on_window_key_pressed), false);
 	add_controller(controller);
+}
+
+void MosaicWindow::set_undo_redo_sensitive_callback(bool has_undo, bool has_redo) {
+	undo_button.set_sensitive(has_undo);
+	redo_button.set_sensitive(has_redo);
 }
 
 void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {

@@ -822,6 +822,7 @@ void Grid::push_undo() {
 	if (undo_layers.empty() || colors != undo_layers.back()) {
 		undo_layers.push_back(colors);
 		redo_layers.clear();
+		signal_on_change_undo_redo.emit(true, false);
 	}
 }
 
@@ -840,6 +841,7 @@ void Grid::undo() {
 		}
 	}
 	undo_layers.pop_back();
+	signal_on_change_undo_redo.emit(has_undo(), has_redo());
 }
 
 bool Grid::has_redo() {
@@ -861,6 +863,7 @@ void Grid::redo() {
 		}
 	}
 	redo_layers.pop_back();
+	signal_on_change_undo_redo.emit(has_undo(), has_redo());
 }
 
 void Grid::Rainbow::exit_with_bug(const string &error) {

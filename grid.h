@@ -90,6 +90,7 @@ public:
 	void set_color(Index y, Index x, Color color, bool ignore_rainbow = false);
 
 	sigc::signal<void(Index, Index, Color)> signal_on_set_color;
+	sigc::signal<void(bool, bool)> signal_on_change_undo_redo;
 
 	void draw_line(Index y1, Index x1, Index y2, Index x2, Color color);
 
