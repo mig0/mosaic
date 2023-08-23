@@ -5,7 +5,7 @@
 int main(int argc, char *argv[], char *envp[]) {
 	map <string, int> preferences = parse_options(argc, argv, envp);
 
-	Grid grid(30, 30);
+	Grid grid(preferences["size_y"], preferences["size_x"]);
 
 //	grid.set_color(20, 20, Bl);
 
