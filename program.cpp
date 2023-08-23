@@ -2,11 +2,11 @@
 #include <iostream>
 #include <getopt.h>
 
-map <string, string> parse_options(int &argc, char *argv[], char *envp[]) {
+map <string, int> parse_options(int &argc, char *argv[], char *envp[]) {
 	option longopts[] = {
-		{ "help",         no_argument, NULL, 'h' },
-		{ "version",      no_argument, NULL, 'v' },
-		{ "new-instance", no_argument, NULL, 'n' },
+		{ "help",         no_argument,       NULL, 'h' },
+		{ "version",      no_argument,       NULL, 'v' },
+		{ "new-instance", no_argument,       NULL, 'n' },
 		{ 0 },
 	};
 
@@ -42,7 +42,6 @@ Options:
 	argc = 0;  // don't allow anyone else to parse options
 
 	return {
-		{ "example-flag", "" },
-		{ "new-instance", new_instance ? "requested" : "" },
+		{ "new-instance", new_instance ? 1 : 0 },
 	};
 }

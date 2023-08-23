@@ -3,7 +3,7 @@
 #include "graphics.h"
 
 int main(int argc, char *argv[], char *envp[]) {
-	map <string, string> preferences = parse_options(argc, argv, envp);
+	map <string, int> preferences = parse_options(argc, argv, envp);
 
 	Grid grid(30, 30);
 
@@ -98,7 +98,7 @@ int main(int argc, char *argv[], char *envp[]) {
 //	grid.load("text-example.sav");
 
 	auto app = Gtk::Application::create("Migo.Mosaic");
-	if (preferences["new-instance"] == "requested")
+	if (preferences["new-instance"])
 		app->set_flags(Gtk::Application::Flags::NON_UNIQUE);
 
 	return app->make_window_and_run<MosaicWindow>(argc, argv, grid);

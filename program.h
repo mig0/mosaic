@@ -7,6 +7,6 @@ using namespace std;
 
 const auto VERSION = "1.0";
 
-map <string, string> parse_options(int &argc, char *argv[], char *envp[]);
+map <string, int> parse_options(int &argc, char *argv[], char *envp[]);
 
 #endif /* __PROGRAM_H__ */
