@@ -1,5 +1,6 @@
 #include "program.h"
 #include <iostream>
+#include <regex>
 #include <getopt.h>
 #include <unistd.h>
 
@@ -9,33 +10,12 @@ bool parse_size(char *str, int &size_x, int &size_y) {
 	if (str == nullptr)
 		return false;
 
-	char *first = str;
-	while (*str != '\0' && *str != 'x') {
-		if (*str < '0' || *str > '9')
-			return false;
-		str++;
-	}
-
-	if (*str != 'x')
-		return false;
-	*str = '\0';
-	int x = stoi(first);
-	*str = 'x';
-	str++;
-
-	char *second = str;
-	while (*str != '\0') {
-		if (*str < '0' || *str > '9')
-			return false;
-		str++;
-	}
-
-	int y = stoi(second);
-	if (!x || !y)
+	cmatch match;
+	if (!regex_search(str, match, regex("^(\\d+)x(\\d+)$")))
 		return false;
 
-	size_x = x;
-	size_y = y;
+	size_x = stoi(match[1]);
+	size_y = stoi(match[2]);
 	return true;
 }
 
@@ -88,7 +68,7 @@ Options:
 		}
 	}
 
-	if (size_x < 6 && size_y < 6) {
+	if (size_x < 6 || size_y < 6) {
 		cerr << "Requested size " << size_x << 'x' << size_y << " is too small" << endl;
 		exit(1);
 	}
