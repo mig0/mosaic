@@ -930,8 +930,8 @@ void Grid::Rainbow::pop() {
 	--defined;
 }
 
-Color get_delta_color(Color color, int delta) {
-	return (Color)((((int)color + delta) % NUM_COLORS + NUM_COLORS) % NUM_COLORS);
+Color get_offset_color(Color color, int offset) {
+	return (Color)((((int)color + offset) % NUM_COLORS + NUM_COLORS) % NUM_COLORS);
 }
 
 Color Grid::Rainbow::get_color(Color color, Index y, Index x) {
@@ -940,47 +940,47 @@ Color Grid::Rainbow::get_color(Color color, Index y, Index x) {
 	if (!is_defined())
 		exit_with_bug("Called get_color without being defined");
 
-	int delta = 0;
+	int offset = 0;
 
 	switch (type) {
 	case RAINBOW_CONCENTRIC:
 		if (concentric_type == CONCENTRIC_CIRCLE)
-			delta = (y2 - y1) / 2 - ::get_line_size(y, x, (y2 + y1) / 2, (x2 + x1) / 2);
+			offset = (y2 - y1) / 2 - ::get_line_size(y, x, (y2 + y1) / 2, (x2 + x1) / 2);
 		else if (concentric_type == CONCENTRIC_RHOMB)
-			delta = (y2 - y1) / 2 - abs(y - (y2 + y1) / 2) - abs(x - (x2 + x1) / 2);
+			offset = (y2 - y1) / 2 - abs(y - (y2 + y1) / 2) - abs(x - (x2 + x1) / 2);
 		else {
-			Size delta1_y = abs(y - y1);
-			Size delta2_y = abs(y - y2);
-			Size delta1_x = abs(x - x1);
-			Size delta2_x = abs(x - x2);
-			delta = min(min(delta1_y, delta2_y), min(delta1_x, delta2_x));
+			Size offset1_y = abs(y - y1);
+			Size offset2_y = abs(y - y2);
+			Size offset1_x = abs(x - x1);
+			Size offset2_x = abs(x - x2);
+			offset = min(min(offset1_y, offset2_y), min(offset1_x, offset2_x));
 		}
 		break;
 	case RAINBOW_CENTRICAL1:
-		delta = ::get_line_size(y, x, y1, x1);
+		offset = ::get_line_size(y, x, y1, x1);
 		break;
 	case RAINBOW_CENTRICAL2:
-		delta = ::get_line_size(y, x, y1, x2);
+		offset = ::get_line_size(y, x, y1, x2);
 		break;
 	case RAINBOW_CENTRICAL3:
-		delta = ::get_line_size(y, x, y2, x1);
+		offset = ::get_line_size(y, x, y2, x1);
 		break;
 	case RAINBOW_CENTRICAL4:
-		delta = ::get_line_size(y, x, y2, x2);
+		offset = ::get_line_size(y, x, y2, x2);
 		break;
 	case RAINBOW_DIAGONAL1:
-		delta = y - y1 + x - x1;
+		offset = y - y1 + x - x1;
 		break;
 	case RAINBOW_DIAGONAL2:
-		delta = y - y1 - x + x1;
+		offset = y - y1 - x + x1;
 		break;
 	case RAINBOW_HORIZONTAL:
-		delta = x - x1;
+		offset = x - x1;
 		break;
 	case RAINBOW_VERTICAL:
-		delta = y - y1;
+		offset = y - y1;
 		break;
 	}
 
-	return get_delta_color(color, delta);
+	return get_offset_color(color, offset);
 }
