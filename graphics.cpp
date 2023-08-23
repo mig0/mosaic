@@ -71,6 +71,7 @@ vector<Glib::ustring> rainbow_type_strings = {
 	"No rainbow",
 	"Rainbow best",
 	"Concentric",
+	"Individual",
 	"Centrical 1",
 	"Centrical 2",
 	"Centrical 3",

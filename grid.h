@@ -32,6 +32,7 @@ enum RainbowType {
 	RAINBOW_NONE,
 	RAINBOW_BEST,
 	RAINBOW_CONCENTRIC,
+	RAINBOW_INDIVIDUAL,
 	RAINBOW_CENTRICAL1,
 	RAINBOW_CENTRICAL2,
 	RAINBOW_CENTRICAL3,
@@ -170,10 +171,12 @@ protected:
 		RainbowType type;
 		Index y1, x1, y2, x2;
 		ConcentricType concentric_type;
+		int individual_offset;
 		void exit_with_bug(const string &error);
+		Grid &grid;
 
 	public:
-		Rainbow();
+		Rainbow(Grid &grid);
 		bool is_started();
 		void start(RainbowType type);
 		void stop();
@@ -182,10 +185,12 @@ protected:
 		void push(RainbowType best_type, Index y0, Index x0, Size radius, ConcentricType = CONCENTRIC_CIRCLE);
 		void push_none();
 		void pop();
+		void reset_individual_color();
+		void start_new_individual_color(Color fg_color = NO_COLOR, Color bg_color = NO_COLOR);
 		Color get_color(Color color, Index y, Index x);
 	};
 
-	Rainbow rainbow;
+	Rainbow rainbow = *this;
 
 	void exit_with_bug();
 	void assert_coord_visible(Index y, Index x);

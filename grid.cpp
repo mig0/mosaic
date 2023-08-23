@@ -91,7 +91,7 @@ void Grid::draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
 	Step y_step = y2 > y1 ? STEP_FORW : y2 == y1 ? STEP_NONE : STEP_BACK;
 	Step x_step = x2 > x1 ? STEP_FORW : x2 == x1 ? STEP_NONE : STEP_BACK;
 
-	rainbow.push(y_len > x_len ? RAINBOW_VERTICAL : RAINBOW_HORIZONTAL, y1, x1, y2, x2, CONCENTRIC_RECT);
+	rainbow.push(RAINBOW_INDIVIDUAL, y1, x1, y2, x2, CONCENTRIC_RECT);
 
 	Index y = y1;
 	Index x = x1;
@@ -102,6 +102,7 @@ void Grid::draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
 		int p = a - (y_len - 1);
 
 		for (; ; y += (int)y_step) {
+			rainbow.start_new_individual_color(color);
 			set_color(y, x, color);
 #ifdef NAIVE_LINE_ALGORYTHM
 			x = x1 + (abs((int)y + (int)y_step - (int)y1) / (float)y_len * (float)x_len) * (int)x_step;
@@ -117,6 +118,7 @@ void Grid::draw_line(Index y1, Index x1, Index y2, Index x2, Color color) {
 		int p = a - (x_len - 1);
 
 		for (; ; x += (int)x_step) {
+			rainbow.start_new_individual_color(color);
 			set_color(y, x, color);
 #ifdef NAIVE_LINE_ALGORYTHM
 			y = y1 + (abs((int)x + (int)x_step - (int)x1) / (float)x_len * (float)y_len) * (int)y_step;
@@ -138,12 +140,15 @@ void Grid::draw_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool w
 	rainbow.push(RAINBOW_DIAGONAL1, y1, x1, y2, x2, CONCENTRIC_RECT);
 
 	for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
+		rainbow.reset_individual_color();
 		for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
 			if (without_corners
 				? (y == y1 || y == y2) && x != x1 && x != x2 || (x == x1 || x == x2) && y != y1 && y != y2
 				: y == y1 || y == y2 || x == x1 || x == x2
-			)
+			) {
+				rainbow.start_new_individual_color(color);
 				set_color(y, x, color);
+			}
 		}
 	}
 
@@ -158,8 +163,10 @@ void Grid::draw_filled_rect(Index y1, Index x1, Index y2, Index x2, Color color,
 
 	for (Index y = min(y1, y2); y <= max(y1, y2); y++) {
 		for (Index x = min(x1, x2); x <= max(x1, x2); x++) {
-			if (!(without_corners && (y == y1 || y == y2) && (x == x1 || x == x2)))
+			if (!(without_corners && (y == y1 || y == y2) && (x == x1 || x == x2))) {
+				rainbow.start_new_individual_color(color);
 				set_color(y, x, color);
+			}
 		}
 	}
 
@@ -221,6 +228,7 @@ void Grid::draw_circle(Index y0, Index x0, Size radius, Color color) {
 	rainbow.push(RAINBOW_VERTICAL, y0, x0, radius);
 
 	iterate_circle_eighth(radius, [=, this](Index yd, Index xd) {
+		rainbow.start_new_individual_color(color);
 		set_color(y0 + yd, x0 + xd, color);
 		set_color(y0 + yd, x0 - xd, color);
 		set_color(y0 - yd, x0 + xd, color);
@@ -246,9 +254,13 @@ void Grid::draw_filled_circle(Index y0, Index x0, Size radius, Color color) {
 	rainbow.push(RAINBOW_CONCENTRIC, y0, x0, radius);
 
 	iterate_circle_eighth(radius, [=, this](Index yd, Index xd) {
+		rainbow.reset_individual_color();
 		draw_line(y0 + yd, x0 + xd, y0 + yd, x0 - xd, color);
+		rainbow.reset_individual_color();
 		draw_line(y0 - yd, x0 + xd, y0 - yd, x0 - xd, color);
+		rainbow.reset_individual_color();
 		draw_line(y0 + xd, x0 + yd, y0 + xd, x0 - yd, color);
+		rainbow.reset_individual_color();
 		draw_line(y0 - xd, x0 + yd, y0 - xd, x0 - yd, color);
 		return false;
 	});
@@ -305,18 +317,19 @@ void Grid::draw_rhomb(Index y0, Index x0, Size radius, Color color) {
 	rainbow.push(RAINBOW_VERTICAL, y0, x0, radius);
 
 	for (Index q = 0; q < 4; q++) {
+		rainbow.start_new_individual_color(color);
 		for (Index r = 0; r < radius; r++) {
 			Index y =
-				q == 0 ? y0 - radius + r :
-				q == 1 ? y0 + r :
-				q == 2 ? y0 + radius - r :
-				q == 3 ? y0 - r :
+				q == 0 ? y0 - r :
+				q == 1 ? y0 - radius + r :
+				q == 2 ? y0 + r :
+				q == 3 ? y0 + radius - r :
 				0;
 			Index x =
-				q == 0 ? x0 + r :
-				q == 1 ? x0 + radius - r :
-				q == 2 ? x0 - r :
-				q == 3 ? x0 - radius + r :
+				q == 0 ? x0 - radius + r :
+				q == 1 ? x0 + r :
+				q == 2 ? x0 + radius - r :
+				q == 3 ? x0 - r :
 				0;
 			set_color(y, x, color);
 		}
@@ -462,8 +475,11 @@ void Grid::draw_triangle(Index y1, Index x1, Index y2, Index x2, Index y3, Index
 	Index y_top, x_top, y_mid, x_mid, y_bot, x_bot;
 	set_triangle_top_mid_bot_points(y1, x1, y2, x2, y3, x3, y_top, x_top, y_mid, x_mid, y_bot, x_bot);
 
+	rainbow.reset_individual_color();
 	draw_line(y_top, x_top, y_bot, x_bot, color);
+	rainbow.reset_individual_color();
 	draw_line(y_top, x_top, y_mid, x_mid, color);
+	rainbow.reset_individual_color();
 	draw_line(y_mid, x_mid, y_bot, x_bot, color);
 
 	rainbow.pop();
@@ -487,6 +503,7 @@ void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3
 	bool is_switched = false;
 
 	for (; beg_i < beg_cells.size() && end_i < end_cells.size(); beg_i++, end_i++) {
+		rainbow.reset_individual_color();
 		shared_ptr <Cell> beg = beg_cells[beg_i];
 		shared_ptr <Cell> end = end_cells[end_i];
 		if (beg->y != end->y) {
@@ -497,6 +514,7 @@ void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3
 		draw_line(beg->y, beg->x, end->y, end->x, color);
 		while (beg_i + 1 < beg_cells.size() && beg_cells[beg_i + 1]->y == beg->y) {
 			beg_i++;
+			rainbow.start_new_individual_color(color);
 			set_color(beg_cells[beg_i]->y, beg_cells[beg_i]->x, color);
 		}
 		for (auto i : {1, 2}) {
@@ -507,6 +525,7 @@ void Grid::draw_filled_triangle(Index y1, Index x1, Index y2, Index x2, Index y3
 			}
 			while (end_i + 1 < end_cells.size() && end_cells[end_i + 1]->y == beg->y) {
 				end_i++;
+				rainbow.start_new_individual_color(color);
 				set_color(end_cells[end_i]->y, end_cells[end_i]->x, color);
 			}
 		}
@@ -549,16 +568,24 @@ void Grid::draw_text(Index y0, Index x0, string str, Color fg_color, Color bg_co
 
 	int len = str.length();
 
-	rainbow.push(RAINBOW_VERTICAL, y0, x0, y0 + (len - 1) * y_offset + 4, x0 + (len - 1) * (4 + x_offset) + 2, CONCENTRIC_RECT);
+	rainbow.push(RAINBOW_INDIVIDUAL, y0, x0, y0 + (len - 1) * y_offset + 4, x0 + (len - 1) * (4 + x_offset) + 2, CONCENTRIC_RECT);
+
+	bool skip_new_individual_color = false;
 
 	for (int c = 0; c < len; c++) {
+		if (!skip_new_individual_color)
+			rainbow.start_new_individual_color(fg_color, bg_color);
+
 		draw_char(y0 + c * y_offset, x0 + c * (4 + x_offset), str[c], fg_color, bg_color);
+
+		if (str[c] == ' ' && TEXT_RAINBOW_SKIPS_COLOR_FOR_SPACE)
+			skip_new_individual_color = true;
 	}
 
 	rainbow.pop();
 }
 
-void Grid::draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0/* = Re*/, Color bg_color/* = NO_COLOR*/, int y_offset/* = 0*/, int x_offset/* = 0*/) {
+void Grid::draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0, Color bg_color/* = NO_COLOR*/, int y_offset/* = 0*/, int x_offset/* = 0*/) {
 	Color fg_color = fg_color0;
 	assert_coord_visible(y0, x0);
 
@@ -871,7 +898,7 @@ void Grid::Rainbow::exit_with_bug(const string &error) {
 	exit(1);
 }
 
-Grid::Rainbow::Rainbow() : started(false), defined(0) {}
+Grid::Rainbow::Rainbow(Grid &grid_) : started(false), defined(0), grid(grid_) {}
 
 bool Grid::Rainbow::is_started() {
 	return started;
@@ -911,6 +938,7 @@ void Grid::Rainbow::push(RainbowType best_type, Index y1_, Index x1_, Index y2_,
 	y2 = y2_;
 	x2 = x2_;
 	concentric_type = cc_type;
+	reset_individual_color();
 }
 
 void Grid::Rainbow::push(RainbowType best_type, Index y0_, Index x0_, Size radius, ConcentricType cc_type) {
@@ -928,6 +956,25 @@ void Grid::Rainbow::pop() {
 	if (!is_defined())
 		exit_with_bug("Can't pop. No corresponding push");
 	--defined;
+}
+
+void Grid::Rainbow::reset_individual_color() {
+	individual_offset = -1;
+}
+
+void Grid::Rainbow::start_new_individual_color(Color fg_color/* = NO_COLOR*/, Color bg_color/* = NO_COLOR*/) {
+	if (!is_defined())
+		return;
+
+	individual_offset++;
+
+	if (grid.is_color_real(fg_color)) {
+		fg_color = get_color(fg_color, 0, 0);
+		if (!grid.is_color_real(bg_color))
+			bg_color = grid.bg_color;
+		if (fg_color == bg_color)
+			individual_offset++;
+	}
 }
 
 Color get_offset_color(Color color, int offset) {
@@ -979,6 +1026,9 @@ Color Grid::Rainbow::get_color(Color color, Index y, Index x) {
 		break;
 	case RAINBOW_VERTICAL:
 		offset = y - y1;
+		break;
+	case RAINBOW_INDIVIDUAL:
+		offset = individual_offset < 0 ? 0 : individual_offset;
 		break;
 	}
 
