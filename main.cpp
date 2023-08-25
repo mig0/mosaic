@@ -94,8 +94,10 @@ int main(int argc, char *argv[], char *envp[]) {
 //	grid.pop_undo();
 
 	grid.push_undo();
-	grid.draw_text_rainbow(1, 1, "Welcome to    ", Re);
-	grid.draw_text_rainbow(grid.get_size_y() - 6, 1, "Mosaic!    ", Bl, Gr, 0, 1);
+	grid.start_rainbow(RAINBOW_BEST);
+	grid.draw_text(1, 1, "Welcome to    ", Re);
+	grid.draw_text(grid.get_size_y() - 6, 1, "Mosaic!    ", Bl, Gr, 0, 1);
+	grid.stop_rainbow();
 
 	if (initial_sav_filename) {
 		grid.push_undo();

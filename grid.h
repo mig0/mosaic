@@ -67,18 +67,9 @@ public:
 	Cell(Index y_, Index x_, Color color_): y(y_), x(x_), color(color_) {}
 };
 
-class Grid {
-	Size size_y;
-	Size size_x;
-	Color bg_color;
-	vector <vector <Color>> colors;
-	ostringstream bug;
-	Size passable_threshold;
-	bool is_collecting;
-	vector <shared_ptr <Cell>> collected_cells;
-	vector <vector <vector <Color>>> undo_layers;
-	vector <vector <vector <Color>>> redo_layers;
+constexpr bool TEXT_RAINBOW_SKIPS_COLOR_FOR_SPACE = true;
 
+class Grid {
 public:
 	Grid(Size size_y, Size size_x);
 	Grid(Size size_y, Size size_x, Color bg_color);
@@ -98,25 +89,21 @@ public:
 	void draw_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false);
 	void draw_filled_rect(Index y1, Index x1, Index y2, Index x2, Color color, bool without_corners = false);
 	void draw_filled_rect_2(Index y1, Index x1, Index y2, Index x2, Color color1, Color color2, bool without_corners = false);
-	void draw_filled_rect_rainbow(Index y1, Index x1, Index y2, Index x2, Color color0 = Re, bool without_corners = false);
 
 	void iterate_circle_eighth(Size radius, function <bool (Index yd, Index xd)> code);
 	void draw_circle(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_circle(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_circle_2(Index y0, Index x0, Size radius, Color color1, Color color2);
-	void draw_filled_circle_rainbow(Index y0, Index x0, Size radius, Color color0 = Re);
 	Size get_circle_diagonal_delta(Size radius);
 	void get_circle_triangle_delta(Size radius, Size &yd_, Size &xd_);
 
 	void draw_rhomb(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_rhomb(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_rhomb_2(Index y0, Index x0, Size radius, Color color1, Color color2);
-	void draw_filled_rhomb_rainbow(Index y0, Index x0, Size radius, Color color0 = Re);
 
 	void draw_square(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_square(Index y0, Index x0, Size radius, Color color);
 	void draw_filled_square_2(Index y0, Index x0, Size radius, Color color1, Color color2);
-	void draw_filled_square_rainbow(Index y0, Index x0, Size radius, Color color0 = Re);
 
 	void draw_circle_crest(Index y0, Index x0, Size radius, Color color1, Color color2, int axes_or_diagonal);
 	void draw_clock(Index y0, Index x0, Size radius, Color color1, Color color2, Color color3, unsigned int hours = 3, unsigned int minutes = 0);
@@ -128,15 +115,12 @@ public:
 
 	void draw_char(Index y0, Index x0, char ch, Color fg_color, Color bg_color = NO_COLOR);
 	void draw_text(Index y0, Index x0, string str, Color fg_color, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0);
-	void draw_text_rainbow(Index y0, Index x0, string str, Color fg_color0 = Re, Color bg_color = NO_COLOR, int y_offset = 0, int x_offset = 0);
 
 	bool is_coord_visible(Index y, Index x);
 	bool is_coord_passable(Index y, Index x);
 	bool is_color_real(Color color);
 
 	Color get_next_color_nowrap(Color color);
-	Color get_next_color(Color color);
-	Color get_prev_color(Color color);
 
 	bool save(ostream &os);
 	bool save(string filename);
@@ -164,6 +148,17 @@ public:
 	void redo();
 
 protected:
+	Size size_y;
+	Size size_x;
+	Color bg_color;
+	vector <vector <Color>> colors;
+	ostringstream bug;
+	Size passable_threshold;
+	bool is_collecting;
+	vector <shared_ptr <Cell>> collected_cells;
+	vector <vector <vector <Color>>> undo_layers;
+	vector <vector <vector <Color>>> redo_layers;
+
 	class Rainbow {
 		bool started = false;
 		RainbowType start_type;

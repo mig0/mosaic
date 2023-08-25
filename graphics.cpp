@@ -5,7 +5,6 @@ enum CircleType {
 	CIRCLE_TYPE_OUTLINE,
 	CIRCLE_TYPE_FILLED,
 	CIRCLE_TYPE_FILLED_2,
-	CIRCLE_TYPE_RAINBOW,
 	CIRCLE_TYPE_CLOCK,
 	CIRCLE_TYPE_CREST,
 	CIRCLE_TYPE_CREST_DIAG,
@@ -13,11 +12,9 @@ enum CircleType {
 	CIRCLE_TYPE_RHOMB_OUTLINE,
 	CIRCLE_TYPE_RHOMB_FILLED,
 	CIRCLE_TYPE_RHOMB_FILLED_2,
-	CIRCLE_TYPE_RHOMB_RAINBOW,
 	CIRCLE_TYPE_SQUARE_OUTLINE,
 	CIRCLE_TYPE_SQUARE_FILLED,
 	CIRCLE_TYPE_SQUARE_FILLED_2,
-	CIRCLE_TYPE_SQUARE_RAINBOW,
 	CIRCLE_TYPE_TRIANGLE,
 	CIRCLE_TYPE_TRIANGLE_FILLED,
 	CIRCLE_TYPE_TRIANGLE_FILLED_2,
@@ -27,7 +24,6 @@ vector<Glib::ustring> center_type_strings = {
 	"Circle Outline",
 	"Circle Filled",
 	"Circle Filled 2",
-	"Circle Rainbow",
 	"Clock",
 	"Crest",
 	"Crest diag",
@@ -35,11 +31,9 @@ vector<Glib::ustring> center_type_strings = {
 	"Rhomb Outline ",
 	"Rhomb Filled",
 	"Rhomb Filled 2",
-	"Rhomb Rainbow",
 	"Square Outline",
 	"Square Filled",
 	"Square Filled 2",
-	"Square Rainbow",
 	"Triangle Outline",
 	"Triangle Filled",
 	"Triangle Filled 2",
@@ -49,7 +43,6 @@ enum RectType {
 	RECT_TYPE_OUTLINE,
 	RECT_TYPE_FILLED,
 	RECT_TYPE_FILLED_2,
-	RECT_TYPE_RAINBOW,
 	RECT_TYPE_LINE,
 	RECT_TYPE_TRIANGLE,
 	RECT_TYPE_TRIANGLE_FILLED,
@@ -60,7 +53,6 @@ vector<Glib::ustring> rect_type_strings = {
 	"Rect Outline",
 	"Rect Filled",
 	"Rect Filled 2",
-	"Rect Rainbow",
 	"Line",
 	"Triangle Outline",
 	"Triangle Filled",
@@ -559,9 +551,6 @@ void MosaicWindow::draw_circle() {
 	case CIRCLE_TYPE_FILLED_2:
 		grid.draw_filled_circle_2(active_cell_y, active_cell_x, radius, color1, color2);
 		break;
-	case CIRCLE_TYPE_RAINBOW:
-		grid.draw_filled_circle_rainbow(active_cell_y, active_cell_x, radius, active_color);
-		break;
 	case CIRCLE_TYPE_CLOCK:
 		grid.draw_clock(active_cell_y, active_cell_x, radius, color1, color2, color3);
 		break;
@@ -582,9 +571,6 @@ void MosaicWindow::draw_circle() {
 	case CIRCLE_TYPE_RHOMB_FILLED_2:
 		grid.draw_filled_rhomb_2(active_cell_y, active_cell_x, radius, color1, color2);
 		break;
-	case CIRCLE_TYPE_RHOMB_RAINBOW:
-		grid.draw_filled_rhomb_rainbow(active_cell_y, active_cell_x, radius, active_color);
-		break;
 	case CIRCLE_TYPE_SQUARE_OUTLINE:
 		grid.draw_square(active_cell_y, active_cell_x, radius, active_color);
 		break;
@@ -593,9 +579,6 @@ void MosaicWindow::draw_circle() {
 		break;
 	case CIRCLE_TYPE_SQUARE_FILLED_2:
 		grid.draw_filled_square_2(active_cell_y, active_cell_x, radius, color1, color2);
-		break;
-	case CIRCLE_TYPE_SQUARE_RAINBOW:
-		grid.draw_filled_square_rainbow(active_cell_y, active_cell_x, radius, active_color);
 		break;
 	case CIRCLE_TYPE_TRIANGLE:
 	case CIRCLE_TYPE_TRIANGLE_FILLED:
@@ -643,9 +626,6 @@ void MosaicWindow::draw_rect() {
 		break;
 	case RECT_TYPE_FILLED_2:
 		grid.draw_filled_rect_2(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, color1, color2);
-		break;
-	case RECT_TYPE_RAINBOW:
-		grid.draw_filled_rect_rainbow(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
 		break;
 	case RECT_TYPE_LINE:
 		grid.draw_line(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_color);
