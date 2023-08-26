@@ -1,4 +1,5 @@
 mosaic
+*.o
 *.sav
 tasks
 tests
