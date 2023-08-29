@@ -19,7 +19,7 @@ public:
 	Color get_next_color(Color color);
 	Color get_prev_color(Color color);
 
-	vector <vector <Color>> get_colors() { return colors; }
+	vector <vector <Color>> &get_colors() { return colors; }
 };
 
 #endif /* __GRID_H__ */
