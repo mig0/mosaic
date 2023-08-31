@@ -5,6 +5,7 @@
 
 bool DEBUG = false;
 bool MANUAL = false;
+bool MANUAL_LAST = false;
 bool SIMULATE_GridDrawTest_FAILURE = false;
 bool SIMULATE_GridDrawTest_SUCCESS = false;
 
@@ -74,6 +75,7 @@ class GridManualUsageTest {
 public:
 	string descr;
 	vector <vector <Color>> cleared_colors;
+	string_view last_subtest_descr;
 	GridManualUsageTest(string_view descr_) {
 		descr = descr_;
 		grid.clear();
@@ -81,20 +83,31 @@ public:
 		grid.push_undo();
 	};
 	void cut(string_view subtest_descr) {
-		if (MANUAL) {
-			grid.show();
-			cout << "After " << subtest_descr << endl << "If OK, press Enter. Or Ctrl-C to abort. ";
-			string answer;
-			getline(cin, answer);
-		}
-		grid.undo();
-		grid.push_undo();
+		if (MANUAL)
+			prompt(subtest_descr);
+		if (MANUAL_LAST)
+			last_subtest_descr = subtest_descr;
+		grid.undo(true);
+		grid.push_undo(true);
 	}
 	~GridManualUsageTest() {
-		grid.undo();
+		if (MANUAL_LAST) {
+			bool has_redo = grid.has_redo();
+			if (has_redo) grid.redo();
+			prompt(last_subtest_descr);
+			if (has_redo) grid.undo(true);
+		}
+		grid.undo(true);
 		auto actual_colors = grid.get_colors();
 		bool success = actual_colors == cleared_colors;
 		ok(success, descr + " after undo", "empty grid");
+	}
+protected:
+	void prompt(string_view subtest_descr) {
+		grid.show();
+		cout << "After " << subtest_descr << endl << "If OK, press Enter. Or Ctrl-C to abort. ";
+		string answer;
+		getline(cin, answer);
 	}
 };
 
@@ -430,6 +443,8 @@ void test_grid_usage_manually() {
 	grid.set_color(20, 20, Bl);
 	test.cut("set_color(20, 20, Bl)");
 
+	test.cut("do nothing");
+
 	grid.draw_line(17, 28, 22, 6, Bl);
 	grid.draw_line(16, 29, 18, 4, Re);
 	test.cut("draw_line(17, 28, 22, 6, Bl) + draw_line(16, 29, 18, 4, Re)");
@@ -527,6 +542,8 @@ int main(int argc, char **argv) {
 		DEBUG = true;
 	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'm')
 		MANUAL = true;
+	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'M')
+		MANUAL_LAST = true;
 	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'f')
 		SIMULATE_GridDrawTest_FAILURE = true;
 	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 's')
