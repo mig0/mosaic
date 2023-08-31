@@ -435,6 +435,17 @@ void test_grid_save_load_failed() {
 		nok(grid.load("tests"), "load(existing-non-sav-file) fails", "success");
 }
 
+void test_grid_move() {
+	GridDrawTest test("move rect", "other rect");
+
+	grid.draw_filled_rect_2(5, 5, 10, 10, Or, Gr);
+	grid.move(5, 5, 10, 10, -2, +2);
+
+	test.cut();
+
+	grid.draw_filled_rect_2(3, 7, 8, 12, Or, Gr);
+}
+
 // Manual tests for Grid methods by prompting user (or automatic undo in non manual mode)
 
 void test_grid_usage_manually() {
@@ -533,6 +544,10 @@ void test_grid_usage_manually() {
 	grid.draw_clock(4, 4, 3, Re, Or, Gr);
 	grid.undo();
 	test.cut("draw_smile(15, 15, 10, Re, Ye) + push_undo() + draw_clock + undo()");
+
+	grid.draw_circle(5, 5, 5, Bl);
+	grid.move(0, 0, 10, 10, 1, 2);
+	test.cut("move circle from left-top to y+1, x+2");
 }
 
 // main - call all tests
@@ -576,5 +591,6 @@ int main(int argc, char **argv) {
 	test_draw_filled_square_rainbow();
 	test_grid_save_load();
 	test_grid_save_load_failed();
+	test_grid_move();
 	test_grid_usage_manually();
 }

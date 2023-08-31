@@ -146,6 +146,7 @@ public:
 	void undo(bool last_request_only = false);
 	bool has_redo();
 	void redo();
+	void move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_offset);
 
 protected:
 	Size size_y;
