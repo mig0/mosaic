@@ -11,6 +11,7 @@ Grid::Grid(Size size_y_, Size size_x_, Color bg_color_) : size_y(size_y_), size_
 	assert_color_real(bg_color);
 	passable_threshold = min(size_y - 1, size_x - 1);
 	clear();
+	push_undo_requested = true;
 }
 
 Size Grid::get_size_y() {
@@ -53,6 +54,16 @@ void Grid::set_color(Index y, Index x, Color color, bool ignore_rainbow/* = fals
 	if (is_collecting) {
 		collected_cells.push_back(make_shared <Cell>(y, x, color));
 		return;
+	}
+
+	if (get_color(y, x) == color)
+		return;
+
+	if (push_undo_requested) {
+		undo_layers.push_back(colors);
+		redo_layers.clear();
+		signal_on_change_undo_redo.emit(true, false);
+		push_undo_requested = false;
 	}
 
 	colors[y][x] = color;
@@ -773,20 +784,24 @@ bool Grid::has_undo() {
 	return !undo_layers.empty();
 }
 
-void Grid::push_undo() {
-	if (undo_layers.empty() || colors != undo_layers.back()) {
-		undo_layers.push_back(colors);
+void Grid::push_undo(bool clear_redo/* = false*/) {
+	if (undo_layers.empty() || colors != undo_layers.back())
+		push_undo_requested = true;
+	if (clear_redo)
 		redo_layers.clear();
-		signal_on_change_undo_redo.emit(true, false);
-	}
 }
 
-void Grid::undo() {
+void Grid::undo(bool last_request_only/* = false*/) {
+	if (last_request_only && push_undo_requested) {
+		push_undo_requested = false;
+		return;
+	}
 	if (!has_undo()) {
 		bug << "Called undo without undo layers (no corresponding push_undo or redo calls)";
 		exit_with_bug();
 	}
 
+	push_undo_requested = false;
 	auto last_pushed_colors = undo_layers.back();
 	if (colors != last_pushed_colors)
 		redo_layers.push_back(colors);
@@ -797,6 +812,7 @@ void Grid::undo() {
 	}
 	undo_layers.pop_back();
 	signal_on_change_undo_redo.emit(has_undo(), has_redo());
+	push_undo_requested = true;
 }
 
 bool Grid::has_redo() {
@@ -809,6 +825,7 @@ void Grid::redo() {
 		exit_with_bug();
 	}
 
+	push_undo_requested = false;
 	if (undo_layers.empty() || colors != undo_layers.back())
 		undo_layers.push_back(colors);
 	auto last_undone_colors = redo_layers.back();
@@ -819,6 +836,7 @@ void Grid::redo() {
 	}
 	redo_layers.pop_back();
 	signal_on_change_undo_redo.emit(has_undo(), has_redo());
+	push_undo_requested = true;
 }
 
 void Grid::Rainbow::exit_with_bug(const string &error) {

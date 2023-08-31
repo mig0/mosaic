@@ -142,8 +142,8 @@ public:
 	void stop_rainbow();
 
 	bool has_undo();
-	void push_undo();
-	void undo();
+	void push_undo(bool clear_redo = false);
+	void undo(bool last_request_only = false);
 	bool has_redo();
 	void redo();
 
@@ -158,6 +158,7 @@ protected:
 	vector <shared_ptr <Cell>> collected_cells;
 	vector <vector <vector <Color>>> undo_layers;
 	vector <vector <vector <Color>>> redo_layers;
+	bool push_undo_requested;
 
 	class Rainbow {
 		bool started = false;
