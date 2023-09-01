@@ -7,6 +7,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 	Grid grid(preferences["size_y"], preferences["size_x"]);
 
+	grid.push_undo();
 	grid.start_rainbow(RAINBOW_BEST);
 	grid.draw_text(1, 1, "Welcome to    ", Re);
 	grid.draw_text(grid.get_size_y() - 6, 1, "Mosaic!    ", Bl, Gr, 0, 1);

@@ -10,8 +10,9 @@ Grid::Grid(Size size_y_, Size size_x_, Color bg_color_) : size_y(size_y_), size_
 	colors = vector <vector <Color>>(size_y, vector <Color>(size_x));
 	assert_color_real(bg_color);
 	passable_threshold = min(size_y - 1, size_x - 1);
+	remove_redo_on_change = false;
+	push_undo_pending = false;
 	clear();
-	push_undo_requested = true;
 }
 
 Size Grid::get_size_y() {
@@ -59,12 +60,15 @@ void Grid::set_color(Index y, Index x, Color color, bool ignore_rainbow/* = fals
 	if (get_color(y, x) == color)
 		return;
 
-	if (push_undo_requested) {
-		undo_layers.push_back(colors);
-		redo_layers.clear();
-		signal_on_change_undo_redo.emit(true, false);
-		push_undo_requested = false;
+	if (remove_redo_on_change) {
+		remove_redo_on_change = false;
+		if (!redo_layers.empty()) {
+			redo_layers.clear();
+			signal_on_change_undo_redo.emit(has_undo(), false);
+		}
 	}
+	if (push_undo_pending)
+		push_undo_layer();
 
 	colors[y][x] = color;
 	signal_on_set_color.emit(y, x, color);
@@ -784,35 +788,54 @@ bool Grid::has_undo() {
 	return !undo_layers.empty();
 }
 
-void Grid::push_undo(bool clear_redo/* = false*/) {
-	if (undo_layers.empty() || colors != undo_layers.back())
-		push_undo_requested = true;
-	if (clear_redo)
-		redo_layers.clear();
+void Grid::push_undo_layer() {
+	push_undo_pending = false;
+	if (undo_layers.empty() || colors != undo_layers.back()) {
+		bool old_has_undo = has_undo();
+		undo_layers.push_back(colors);
+		if (!old_has_undo)
+			signal_on_change_undo_redo.emit(true, has_redo());
+	}
 }
 
-void Grid::undo(bool last_request_only/* = false*/) {
-	if (last_request_only && push_undo_requested) {
-		push_undo_requested = false;
-		return;
+void Grid::push_redo_layer() {
+	push_undo_pending = false;
+	if (redo_layers.empty() || colors != redo_layers.back()) {
+		bool old_has_redo = has_redo();
+		redo_layers.push_back(colors);
+		if (!old_has_redo)
+			signal_on_change_undo_redo.emit(has_undo(), true);
 	}
+}
+
+void Grid::push_undo(bool always/* = false*/) {
+	if (always) {
+		push_undo_layer();
+	} else {
+		push_undo_pending = true;
+	}
+	remove_redo_on_change = true;
+}
+
+void Grid::undo() {
 	if (!has_undo()) {
 		bug << "Called undo without undo layers (no corresponding push_undo or redo calls)";
 		exit_with_bug();
 	}
 
-	push_undo_requested = false;
+	remove_redo_on_change = false;
+	push_redo_layer();
 	auto last_pushed_colors = undo_layers.back();
-	if (colors != last_pushed_colors)
-		redo_layers.push_back(colors);
 	for (Index y = 0; y < size_y; y++) {
 		for (Index x = 0; x < size_x; x++) {
 			set_color(y, x, last_pushed_colors[y][x]);
 		}
 	}
 	undo_layers.pop_back();
-	signal_on_change_undo_redo.emit(has_undo(), has_redo());
-	push_undo_requested = true;
+	bool new_has_undo = has_undo();
+	if (!new_has_undo)
+		signal_on_change_undo_redo.emit(new_has_undo, has_redo());
+	remove_redo_on_change = true;
 }
 
 bool Grid::has_redo() {
@@ -825,9 +848,8 @@ void Grid::redo() {
 		exit_with_bug();
 	}
 
-	push_undo_requested = false;
-	if (undo_layers.empty() || colors != undo_layers.back())
-		undo_layers.push_back(colors);
+	remove_redo_on_change = false;
+	push_undo_layer();
 	auto last_undone_colors = redo_layers.back();
 	for (Index y = 0; y < size_y; y++) {
 		for (Index x = 0; x < size_x; x++) {
@@ -835,8 +857,10 @@ void Grid::redo() {
 		}
 	}
 	redo_layers.pop_back();
-	signal_on_change_undo_redo.emit(has_undo(), has_redo());
-	push_undo_requested = true;
+	bool new_has_redo = has_redo();
+	if (!new_has_redo)
+		signal_on_change_undo_redo.emit(has_undo(), new_has_redo);
+	remove_redo_on_change = true;
 }
 
 bool is_inside_area(Index y, Index x, Index y_min, Index x_min, Index y_max, Index x_max) {

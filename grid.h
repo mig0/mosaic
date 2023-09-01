@@ -142,8 +142,8 @@ public:
 	void stop_rainbow();
 
 	bool has_undo();
-	void push_undo(bool clear_redo = false);
-	void undo(bool last_request_only = false);
+	void push_undo(bool always = false);
+	void undo();
 	bool has_redo();
 	void redo();
 	void move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_offset);
@@ -159,7 +159,8 @@ protected:
 	vector <shared_ptr <Cell>> collected_cells;
 	vector <vector <vector <Color>>> undo_layers;
 	vector <vector <vector <Color>>> redo_layers;
-	bool push_undo_requested;
+	bool remove_redo_on_change;
+	bool push_undo_pending;
 
 	class Rainbow {
 		bool started = false;
@@ -193,6 +194,8 @@ protected:
 	void assert_coord_visible(Index y, Index x);
 	void assert_coord_passable(Index y, Index x);
 	void assert_color_real(Color color);
+	void push_undo_layer();
+	void push_redo_layer();
 };
 
 #endif /* __GRID_H__ */

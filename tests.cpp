@@ -80,24 +80,22 @@ public:
 		descr = descr_;
 		grid.clear();
 		cleared_colors = grid.get_colors();
-		grid.push_undo();
+		grid.push_undo(true);
 	};
 	void cut(string_view subtest_descr) {
 		if (MANUAL)
 			prompt(subtest_descr);
 		if (MANUAL_LAST)
 			last_subtest_descr = subtest_descr;
-		grid.undo(true);
+		grid.undo();
 		grid.push_undo(true);
 	}
 	~GridManualUsageTest() {
 		if (MANUAL_LAST) {
-			bool has_redo = grid.has_redo();
-			if (has_redo) grid.redo();
+			grid.redo();
 			prompt(last_subtest_descr);
-			if (has_redo) grid.undo(true);
 		}
-		grid.undo(true);
+		grid.undo();
 		auto actual_colors = grid.get_colors();
 		bool success = actual_colors == cleared_colors;
 		ok(success, descr + " after undo", "empty grid");
@@ -540,7 +538,7 @@ void test_grid_usage_manually() {
 	test.cut("start_rainbow(RAINBOW_BEST) + draw_filled_rect(0, 0, 29, 29, Gr) + stop_rainbow()");
 
 	grid.draw_smile(15, 15, 10, Re, Ye);
-	grid.push_undo();
+	grid.push_undo(true);
 	grid.draw_clock(4, 4, 3, Re, Or, Gr);
 	grid.undo();
 	test.cut("draw_smile(15, 15, 10, Re, Ye) + push_undo() + draw_clock + undo()");
