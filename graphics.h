@@ -14,6 +14,10 @@ protected:
 	Gtk::Box mini_button_box;
 	Gtk::Button undo_button;
 	Gtk::Button redo_button;
+	Gtk::Button move_l_button;
+	Gtk::Button move_u_button;
+	Gtk::Button move_d_button;
+	Gtk::Button move_r_button;
 
 	Gtk::Box action_box;
 
@@ -106,6 +110,7 @@ protected:
 	void on_hide();
 	void undo();
 	void redo();
+	void move(int y_offset, int x_offset);
 
 public:
 	MosaicWindow(Grid &grid0);

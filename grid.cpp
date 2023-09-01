@@ -868,13 +868,16 @@ bool is_inside_area(Index y, Index x, Index y_min, Index x_min, Index y_max, Ind
 }
 
 void Grid::move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_offset) {
+	if (y_offset == 0 && x_offset == 0)
+		return;
+
 	Index y_min = min(y1, y2);
 	Index x_min = min(x1, x2);
 	Index y_max = max(y1, y2);
 	Index x_max = max(x1, x2);
 
-	Step y_step = y_offset < 0 ? STEP_FORW : y_offset == 0 ? STEP_NONE : STEP_BACK;
-	Step x_step = x_offset < 0 ? STEP_FORW : x_offset == 0 ? STEP_NONE : STEP_BACK;
+	Step y_step = y_offset > 0 ? STEP_BACK : STEP_FORW;
+	Step x_step = x_offset > 0 ? STEP_BACK : STEP_FORW;
 
 	for (Index y = y_offset > 0 ? y_max + y_offset : y_min + y_offset; y_offset > 0 ? y >= y_min : y <= y_max; y += y_step) {
 		for (Index x = x_offset > 0 ? x_max + x_offset : x_min + x_offset; x_offset > 0 ? x >= x_min : x <= x_max; x += x_step) {

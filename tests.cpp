@@ -434,14 +434,20 @@ void test_grid_save_load_failed() {
 }
 
 void test_grid_move() {
-	GridDrawTest test("move rect", "other rect");
+	GridDrawTest test("move rect, circle, square", "other rect, circle, square");
 
 	grid.draw_filled_rect_2(5, 5, 10, 10, Or, Gr);
 	grid.move(5, 5, 10, 10, -2, +2);
+	grid.draw_circle(15, 15, 5, Or);
+	grid.move(10, 10, 20, 20, 1, 0);
+	grid.draw_square(15, 26, 4, Bl);
+	grid.move(11, 22, 19, 30, 0, 0);
 
 	test.cut();
 
 	grid.draw_filled_rect_2(3, 7, 8, 12, Or, Gr);
+	grid.draw_circle(16, 15, 5, Or);
+	grid.draw_square(15, 26, 4, Bl);
 }
 
 // Manual tests for Grid methods by prompting user (or automatic undo in non manual mode)

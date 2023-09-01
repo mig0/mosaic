@@ -128,6 +128,34 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	redo_button.set_margin(4);
 	redo_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::redo));
 
+	Gtk::Separator mini_button_separator(Gtk::Orientation::HORIZONTAL);
+	mini_button_box.append(mini_button_separator);
+	mini_button_separator.set_margin(4);
+
+	mini_button_box.append(move_l_button);
+	move_l_button.set_icon_name("go-previous");
+	move_l_button.set_tooltip_text("Move area 1 point left");
+	move_l_button.set_margin(4);
+	move_l_button.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::move), 0, -1));
+
+	mini_button_box.append(move_u_button);
+	move_u_button.set_icon_name("go-up");
+	move_u_button.set_tooltip_text("Move area 1 point up");
+	move_u_button.set_margin(4);
+	move_u_button.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::move), -1, 0));
+
+	mini_button_box.append(move_d_button);
+	move_d_button.set_icon_name("go-down");
+	move_d_button.set_tooltip_text("Move area 1 point down");
+	move_d_button.set_margin(4);
+	move_d_button.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::move), +1, 0));
+
+	mini_button_box.append(move_r_button);
+	move_r_button.set_icon_name("go-next");
+	move_r_button.set_tooltip_text("Move area 1 point right");
+	move_r_button.set_margin(4);
+	move_r_button.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::move), 0, +1));
+
 	control_box.append(action_box);
 	action_box.set_orientation(Gtk::Orientation::VERTICAL);
 	action_box.set_valign(Gtk::Align::START);
@@ -514,6 +542,22 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 		redo();
 		return true;
 	}
+	else if (keyval == GDK_KEY_KP_Left || keyval == GDK_KEY_Left/* && modifier_mask == Gdk::ModifierType::CONTROL_MASK*/) {
+		move(0, -1);
+		return true;
+	}
+	else if (keyval == GDK_KEY_KP_Up || keyval == GDK_KEY_Up/* && modifier_mask == Gdk::ModifierType::CONTROL_MASK*/) {
+		move(-1, 0);
+		return true;
+	}
+	else if (keyval == GDK_KEY_KP_Down || keyval == GDK_KEY_Down/* && modifier_mask == Gdk::ModifierType::CONTROL_MASK*/) {
+		move(+1, 0);
+		return true;
+	}
+	else if (keyval == GDK_KEY_KP_Right || keyval == GDK_KEY_Right/* && modifier_mask == Gdk::ModifierType::CONTROL_MASK*/) {
+		move(0, +1);
+		return true;
+	}
 
 	// the event has not been handled
 	return false;
@@ -774,4 +818,25 @@ void MosaicWindow::redo() {
 		grid.redo();
 	else
 		show_message_dialog("No redo layers available", true);
+}
+
+void MosaicWindow::move(int y_offset, int x_offset) {
+	if (!has_active_cell()) {
+		show_message_dialog("No active cell #1 is selected", true);
+		return;
+	}
+	if (!has_active_cell2()) {
+		show_message_dialog("No active cell #2 is selected", true);
+		return;
+	}
+	if (!grid.is_coord_visible(active_cell_y + y_offset, active_cell_x + x_offset) || !grid.is_coord_visible(active_cell2_y + y_offset, active_cell2_x + x_offset)) {
+		show_message_dialog("Out of grid move is requested", true);
+		return;
+	}
+	if (y_offset == 0 && x_offset == 0) {
+		show_message_dialog("No move offset is requested", true);
+		return;
+	}
+	grid.push_undo();
+	grid.move(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, y_offset, x_offset);
 }
