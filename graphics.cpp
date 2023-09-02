@@ -231,11 +231,13 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 
 	active_cell_box.append(active_cell_button);
 	active_cell_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
-	set_active_cell(NO_INDEX, NO_INDEX);
+	set_button_color(active_cell_button, NO_COLOR);
+	set_active_cell(NO_INDEX, NO_INDEX);  // does nothing, just for safeness
 
 	active_cell_box.append(active_cell2_button);
 	active_cell2_button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
-	set_active_cell2(NO_INDEX, NO_INDEX);
+	set_button_color(active_cell2_button, NO_COLOR);
+	set_active_cell2(NO_INDEX, NO_INDEX);  // does nothing, just for safeness
 
 	action_box.append(draw_text_box);
 	draw_text_box.set_sensitive(false);
@@ -345,9 +347,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 			set_button_coord_tooltip(button, y, x);
 			button.signal_clicked().connect([this, y, x]() {
 				if (has_active_cell()) {
-					unset_active_cell2();
 					set_active_cell2(y, x);
-					reload_grid_cell(y, x);
 				} else {
 					set_grid_cell_active_color(y, x);
 				}
@@ -444,17 +444,31 @@ void MosaicWindow::set_active_color2(Color color) {
 }
 
 void MosaicWindow::set_active_cell(int y, int x) {
+	if (active_cell_y == y && active_cell_x == x)
+		return;
+
+	bool old_has_active_cell = has_active_cell();
+	int old_active_cell_y = active_cell_y;
+	int old_active_cell_x = active_cell_x;
+
 	active_cell_y = y;
 	active_cell_x = x;
 	set_button_color(active_cell_button, has_active_cell() ? grid.get_color(y, x) : NO_COLOR);
+
 	if (has_active_cell())
 		set_button_coord_tooltip(active_cell_button, y, x);
 	else
 		active_cell_button.set_tooltip_text("Press Right mouse button to set active cell");
+
+	if (old_has_active_cell)
+		reload_grid_cell(old_active_cell_y, old_active_cell_x);
+	if (has_active_cell())
+		reload_grid_cell(active_cell_y, active_cell_x);
+
+	set_active_cell2(NO_INDEX, NO_INDEX);
+
 	draw_text_box.set_sensitive(has_active_cell());
 	draw_circle_box.set_sensitive(has_active_cell());
-	unset_active_cell2();
-	set_active_cell2(NO_INDEX, NO_INDEX);
 }
 
 bool MosaicWindow::has_active_cell() {
@@ -466,6 +480,13 @@ bool MosaicWindow::is_active_cell(int y, int x) {
 }
 
 void MosaicWindow::set_active_cell2(int y, int x) {
+	if (active_cell2_y == y && active_cell2_x == x)
+		return;
+
+	bool old_has_active_cell2 = has_active_cell2();
+	int old_active_cell2_y = active_cell2_y;
+	int old_active_cell2_x = active_cell2_x;
+
 	active_cell2_y = y;
 	active_cell2_x = x;
 	set_button_color(active_cell2_button, has_active_cell2() ? grid.get_color(y, x) : NO_COLOR);
@@ -475,6 +496,12 @@ void MosaicWindow::set_active_cell2(int y, int x) {
 		active_cell2_button.set_tooltip_text("Press Left mouse button to set active cell #2");
 	else
 		active_cell2_button.set_tooltip_text("Set active cell #1 by pressing Right mouse button first");
+
+	if (old_has_active_cell2)
+		reload_grid_cell(old_active_cell2_y, old_active_cell2_x);
+	if (has_active_cell2())
+		reload_grid_cell(active_cell2_y, active_cell2_x);
+
 	draw_rect_box.set_sensitive(has_active_cell2());
 }
 
@@ -484,15 +511,6 @@ bool MosaicWindow::has_active_cell2() {
 
 bool MosaicWindow::is_active_cell2(int y, int x) {
 	return has_active_cell2() && y == active_cell2_y && x == active_cell2_x;
-}
-
-void MosaicWindow::unset_active_cell2() {
-	if (has_active_cell2()) {
-		int old_active_cell2_y = active_cell2_y;
-		int old_active_cell2_x = active_cell2_x;
-		set_active_cell2(NO_INDEX, NO_INDEX);
-		reload_grid_cell(old_active_cell2_y, old_active_cell2_x);
-	}
 }
 
 void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x) {
@@ -506,18 +524,11 @@ void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y
 }
 
 void MosaicWindow::on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x) {
-	int old_active_cell_y = active_cell_y;
-	int old_active_cell_x = active_cell_x;
-	bool old_has_active_cell = has_active_cell();
 	if (cell_y == active_cell_y && cell_x == active_cell_x) {
 		cell_y = NO_INDEX;
 		cell_x = NO_INDEX;
 	}
 	set_active_cell(cell_y, cell_x);
-	if (old_has_active_cell)
-		reload_grid_cell(old_active_cell_y, old_active_cell_x);
-	if (has_active_cell())
-		reload_grid_cell(active_cell_y, active_cell_x);
 }
 
 bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state) {
