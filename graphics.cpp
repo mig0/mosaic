@@ -368,6 +368,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	grid.signal_on_set_color.connect(sigc::mem_fun(*this, &MosaicWindow::set_grid_cell_color_callback));
 	grid.signal_on_change_undo_redo.connect(sigc::mem_fun(*this, &MosaicWindow::set_undo_redo_sensitive_callback));
 	set_undo_redo_sensitive_callback(grid.has_undo(), grid.has_redo());
+	set_move_buttons_sensitive();
 
 	auto controller = Gtk::EventControllerKey::create();
 	controller->signal_key_pressed().connect(
@@ -378,6 +379,13 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 void MosaicWindow::set_undo_redo_sensitive_callback(bool has_undo, bool has_redo) {
 	undo_button.set_sensitive(has_undo);
 	redo_button.set_sensitive(has_redo);
+}
+
+void MosaicWindow::set_move_buttons_sensitive() {
+	move_l_button.set_sensitive(has_active_cell2() && min(active_cell_x, active_cell2_x) > 0);
+	move_u_button.set_sensitive(has_active_cell2() && min(active_cell_y, active_cell2_y) > 0);
+	move_d_button.set_sensitive(has_active_cell2() && max(active_cell_y, active_cell2_y) < grid.get_size_y() - 1);
+	move_r_button.set_sensitive(has_active_cell2() && max(active_cell_x, active_cell2_x) < grid.get_size_x() - 1);
 }
 
 void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
@@ -503,6 +511,7 @@ void MosaicWindow::set_active_cell2(int y, int x) {
 		reload_grid_cell(active_cell2_y, active_cell2_x);
 
 	draw_rect_box.set_sensitive(has_active_cell2());
+	set_move_buttons_sensitive();
 }
 
 bool MosaicWindow::has_active_cell2() {
@@ -833,21 +842,30 @@ void MosaicWindow::redo() {
 
 void MosaicWindow::move(int y_offset, int x_offset) {
 	if (!has_active_cell()) {
-		show_message_dialog("No active cell #1 is selected", true);
+		show_message_dialog("To move area, active cell #1 should be selected first", true);
 		return;
 	}
 	if (!has_active_cell2()) {
-		show_message_dialog("No active cell #2 is selected", true);
-		return;
-	}
-	if (!grid.is_coord_visible(active_cell_y + y_offset, active_cell_x + x_offset) || !grid.is_coord_visible(active_cell2_y + y_offset, active_cell2_x + x_offset)) {
-		show_message_dialog("Out of grid move is requested", true);
+		show_message_dialog("To move area, active cell #2 should be selected first", true);
 		return;
 	}
 	if (y_offset == 0 && x_offset == 0) {
-		show_message_dialog("No move offset is requested", true);
+		show_message_dialog("Moving area with zero offset is nonsense", true);
 		return;
 	}
+
+	int new_active_cell_y  = active_cell_y  + y_offset;
+	int new_active_cell_x  = active_cell_x  + x_offset;
+	int new_active_cell2_y = active_cell2_y + y_offset;
+	int new_active_cell2_x = active_cell2_x + x_offset;
+	if (!grid.is_coord_visible(new_active_cell_y, new_active_cell_x) || !grid.is_coord_visible(new_active_cell2_y, new_active_cell2_x)) {
+		show_message_dialog("Can't move selected area out of grid", true);
+		return;
+	}
+
 	grid.push_undo();
 	grid.move(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, y_offset, x_offset);
+
+	set_active_cell(new_active_cell_y, new_active_cell_x);
+	set_active_cell2(new_active_cell2_y, new_active_cell2_x);
 }

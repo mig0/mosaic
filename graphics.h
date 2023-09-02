@@ -71,6 +71,7 @@ protected:
 	Grid &grid;
 
 	void set_undo_redo_sensitive_callback(bool has_undo, bool has_redo);
+	void set_move_buttons_sensitive();
 	void set_button_color(Gtk::Widget &button, Color color);
 	void set_button_coord_tooltip(Gtk::Widget &button, Index y, Index x);
 	void reload_grid_cell(Index y, Index x);
