@@ -43,6 +43,9 @@ protected:
 	int active_cell2_y = NO_INDEX;
 	int active_cell2_x = NO_INDEX;
 	Gtk::ToggleButton active_cell2_button;
+	int active_cell3_y = NO_INDEX;
+	int active_cell3_x = NO_INDEX;
+	Gtk::ToggleButton active_cell3_button;
 
 	Gtk::Box draw_text_box;
 	Gtk::Label draw_text_label;
@@ -76,18 +79,24 @@ protected:
 	void set_button_coord_tooltip(Gtk::Widget &button, Index y, Index x);
 	void reload_grid_cell(Index y, Index x);
 	void reload_grid();
+
 	void set_grid_cell_color(Index y, Index x, Color color);
 	void set_grid_cell_color_callback(Index y, Index x, Color color);
 	void set_grid_cell_active_color(Index y, Index x);
 	void set_grid_cell_active_color2(Index y, Index x);
 	void set_active_color(Color color);
 	void set_active_color2(Color color);
+
 	void set_active_cell(int y, int x);
 	bool has_active_cell();
 	bool is_active_cell(int y, int x);
 	void set_active_cell2(int y, int x);
 	bool has_active_cell2();
 	bool is_active_cell2(int y, int x);
+	void set_active_cell3(int y, int x);
+	bool has_active_cell3();
+	bool is_active_cell3(int y, int x);
+
 	void on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x);
 	void on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
