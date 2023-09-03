@@ -59,6 +59,18 @@ vector<Glib::ustring> rect_type_strings = {
 	"Triangle Filled 2",
 };
 
+enum TriangleType {
+	TRIANGLE_TYPE_OUTLINE,
+	TRIANGLE_TYPE_FILLED,
+	TRIANGLE_TYPE_FILLED_2,
+};
+
+vector<Glib::ustring> triangle_type_strings = {
+	"Triangle Outline",
+	"Triangle Filled",
+	"Triangle Filled 2",
+};
+
 vector<Glib::ustring> rainbow_type_strings = {
 	"No rainbow",
 	"Rainbow best",
@@ -306,6 +318,27 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	draw_rect_button.set_label("Draw");
 	draw_rect_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_rect));
 
+	action_box.append(draw_triangle_box);
+	draw_triangle_box.set_sensitive(false);
+	draw_triangle_box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	draw_triangle_box.set_halign(Gtk::Align::FILL);
+	draw_triangle_box.set_margin(5);
+	draw_triangle_box.set_spacing(8);
+
+	draw_triangle_box.append(draw_triangle_label);
+	draw_triangle_label.set_label("Triangle");
+	draw_triangle_label.set_halign(Gtk::Align::START);
+	draw_triangle_label.set_expand(true);
+
+	draw_triangle_type_dropdown = Gtk::DropDown(triangle_type_strings);
+	draw_triangle_type_dropdown.set_selected(0);
+	draw_triangle_type_dropdown.set_size_request(180);
+	draw_triangle_box.append(draw_triangle_type_dropdown);
+
+	draw_triangle_box.append(draw_triangle_button);
+	draw_triangle_button.set_label("Draw");
+	draw_triangle_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_triangle));
+
 	control_box.append(button_box);
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
 	button_box.set_halign(Gtk::Align::CENTER);
@@ -543,7 +576,7 @@ void MosaicWindow::set_active_cell3(int y, int x) {
 	if (has_active_cell3())
 		reload_grid_cell(active_cell3_y, active_cell3_x);
 
-	// set sensetiveness of widgets that require 3 points
+	draw_triangle_box.set_sensitive(has_active_cell3());
 }
 
 bool MosaicWindow::has_active_cell3() {
@@ -744,6 +777,31 @@ void MosaicWindow::draw_rect() {
 			grid.draw_filled_triangle(y1, x1, y2, x2, y3, x3, active_color);
 		else
 			grid.draw_filled_triangle_2(y1, x1, y2, x2, y3, x3, color1, color2);
+		break;
+	}
+
+	grid.stop_rainbow();
+}
+
+void MosaicWindow::draw_triangle() {
+	auto type = draw_triangle_type_dropdown.get_selected();
+
+	grid.push_undo();
+
+	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
+
+	Color color1 = active_color;
+	Color color2 = active_color2 != NO_COLOR ? active_color2 : color1 == Gr ? Bl : Gr;
+
+	switch (type) {
+	case TRIANGLE_TYPE_OUTLINE:
+		grid.draw_triangle(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_cell3_y, active_cell3_x, active_color);
+		break;
+	case TRIANGLE_TYPE_FILLED:
+		grid.draw_filled_triangle(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_cell3_y, active_cell3_x, active_color);
+		break;
+	case TRIANGLE_TYPE_FILLED_2:
+		grid.draw_filled_triangle_2(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, active_cell3_y, active_cell3_x, color1, color2);
 		break;
 	}
 

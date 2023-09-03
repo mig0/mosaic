@@ -63,6 +63,11 @@ protected:
 	Gtk::DropDown draw_rect_type_dropdown;
 	Gtk::Button draw_rect_button;
 
+	Gtk::Box draw_triangle_box;
+	Gtk::Label draw_triangle_label;
+	Gtk::DropDown draw_triangle_type_dropdown;
+	Gtk::Button draw_triangle_button;
+
 	Gtk::Box button_box;
 	Gtk::Button clear_button;
 	Gtk::Button save_button;
@@ -103,6 +108,7 @@ protected:
 	void draw_text();
 	void draw_circle();
 	void draw_rect();
+	void draw_triangle();
 
 	void show_about_dialog();
 	Gtk::MessageDialog* message_dialog = nullptr;
