@@ -469,10 +469,8 @@ void MosaicWindow::set_grid_cell_active_color(Index y, Index x) {
 }
 
 void MosaicWindow::set_grid_cell_active_color2(Index y, Index x) {
-	if (active_color2 != NO_COLOR)
-		set_grid_cell_color(y, x, active_color2);
-	else
-		show_message_dialog("Please first select valid active color #2 in the menu", true);
+	Color color = active_color2 != NO_COLOR ? active_color2 : grid.get_bg_color();
+	set_grid_cell_color(y, x, color);
 }
 
 void MosaicWindow::set_active_color(Color color) {

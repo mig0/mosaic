@@ -27,6 +27,10 @@ Color Grid::get_color(Index y, Index x) {
 	return colors[y][x];
 }
 
+Color Grid::get_bg_color() {
+	return bg_color;
+}
+
 const char *Grid::get_color_name(Color color) {
 	return
 		color == Re ? "red" :

@@ -76,6 +76,7 @@ public:
 
 	Size get_size_y();
 	Size get_size_x();
+	Color get_bg_color();
 	Color get_color(Index y, Index x);
 	const char *get_color_name(Color color);
 	string get_color_name(Index y, Index x);
