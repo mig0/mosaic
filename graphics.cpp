@@ -86,6 +86,13 @@ vector<Glib::ustring> rainbow_type_strings = {
 	"Horizontal",
 };
 
+vector<Glib::ustring> move_type_strings = {
+	"Move",
+	"Copy",
+	"Swap",
+	"Step",
+};
+
 MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	ostringstream str_stream;
 	Size size_y = grid.get_size_y();
@@ -339,6 +346,35 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	draw_triangle_button.set_label("Draw");
 	draw_triangle_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::draw_triangle));
 
+	action_box.append(move_area_box);
+	move_area_box.set_sensitive(false);
+	move_area_box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	move_area_box.set_halign(Gtk::Align::FILL);
+	move_area_box.set_margin(5);
+	move_area_box.set_spacing(8);
+
+	move_type_dropdown = Gtk::DropDown(move_type_strings);
+	move_type_dropdown.set_selected(0);
+	move_type_dropdown.set_size_request(80);
+	move_area_box.append(move_type_dropdown);
+
+	move_area_box.append(move_area_label);
+	move_area_label.set_label("area to ±x, ±y");
+	move_area_label.set_halign(Gtk::Align::START);
+	move_area_label.set_expand(true);
+
+	auto move_x_offset_adj = Gtk::Adjustment::create(0, 1 - size_x, size_x - 1);
+	move_x_offset_spin.set_adjustment(move_x_offset_adj);
+	move_area_box.append(move_x_offset_spin);
+
+	auto move_y_offset_adj = Gtk::Adjustment::create(0, 1 - size_y, size_y - 1);
+	move_y_offset_spin.set_adjustment(move_y_offset_adj);
+	move_area_box.append(move_y_offset_spin);
+
+	move_area_box.append(move_area_button);
+	move_area_button.set_label("Draw");
+	move_area_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::move_area));
+
 	control_box.append(button_box);
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
 	button_box.set_halign(Gtk::Align::CENTER);
@@ -541,6 +577,7 @@ void MosaicWindow::set_active_cell2(int y, int x) {
 	set_active_cell3(NO_INDEX, NO_INDEX);
 
 	draw_rect_box.set_sensitive(has_active_cell2());
+	move_area_box.set_sensitive(has_active_cell2());
 	set_move_buttons_sensitive();
 }
 
@@ -932,6 +969,8 @@ void MosaicWindow::redo() {
 }
 
 void MosaicWindow::move(int y_offset, int x_offset) {
+	MoveType type = (MoveType)move_type_dropdown.get_selected();
+
 	if (!has_active_cell()) {
 		show_message_dialog("To move area, active cell #1 should be selected first", true);
 		return;
@@ -955,8 +994,14 @@ void MosaicWindow::move(int y_offset, int x_offset) {
 	}
 
 	grid.push_undo();
-	grid.move(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, y_offset, x_offset);
+	grid.move(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, y_offset, x_offset, type);
 
-	set_active_cell(new_active_cell_y, new_active_cell_x);
-	set_active_cell2(new_active_cell2_y, new_active_cell2_x);
+	if (type != MOVE_TYPE_COPY) {
+		set_active_cell(new_active_cell_y, new_active_cell_x);
+		set_active_cell2(new_active_cell2_y, new_active_cell2_x);
+	}
+}
+
+void MosaicWindow::move_area() {
+	move(move_y_offset_spin.get_value(), move_x_offset_spin.get_value());
 }

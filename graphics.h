@@ -68,6 +68,13 @@ protected:
 	Gtk::DropDown draw_triangle_type_dropdown;
 	Gtk::Button draw_triangle_button;
 
+	Gtk::Box move_area_box;
+	Gtk::DropDown move_type_dropdown;
+	Gtk::Label move_area_label;
+	Gtk::SpinButton move_x_offset_spin;
+	Gtk::SpinButton move_y_offset_spin;
+	Gtk::Button move_area_button;
+
 	Gtk::Box button_box;
 	Gtk::Button clear_button;
 	Gtk::Button save_button;
@@ -126,6 +133,7 @@ protected:
 	void undo();
 	void redo();
 	void move(int y_offset, int x_offset);
+	void move_area();
 
 public:
 	MosaicWindow(Grid &grid0);
