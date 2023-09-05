@@ -455,12 +455,16 @@ void test_grid_move() {
 	grid.move(10, 10, 20, 20, 1, 0);
 	grid.draw_square(15, 26, 4, Bl);
 	grid.move(11, 22, 19, 30, 0, 0);
+	grid.draw_rect(28, 15, 23, 20, Re);
+	grid.move(28, 15, 23, 20, -1, -10, MOVE_TYPE_COPY);
 
 	test.cut();
 
 	grid.draw_filled_rect_2(3, 7, 8, 12, Or, Gr);
 	grid.draw_circle(16, 15, 5, Or);
 	grid.draw_square(15, 26, 4, Bl);
+	grid.draw_rect(28, 15, 23, 20, Re);
+	grid.draw_rect(27, 5, 22, 10, Re);
 }
 
 // Manual tests for Grid methods by prompting user (or automatic undo in non manual mode)
@@ -564,7 +568,11 @@ void test_grid_usage_manually() {
 
 	grid.draw_circle(5, 5, 5, Bl);
 	grid.move(0, 0, 10, 10, 1, 2);
-	test.cut("move circle from left-top to y+1, x+2");
+	test.cut("move circle from left-top to y=1, x=2");
+
+	grid.draw_circle(5, 5, 5, Bl);
+	grid.move(0, 0, 10, 10, 8, 10, MOVE_TYPE_COPY);
+	test.cut("copy circle from left-top to y=8, x=10");
 }
 
 // main - call all tests

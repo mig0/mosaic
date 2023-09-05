@@ -49,6 +49,13 @@ enum ConcentricType {
 	CONCENTRIC_RECT,
 };
 
+enum MoveType {
+	MOVE_TYPE_MOVE,
+	MOVE_TYPE_COPY,
+	MOVE_TYPE_SWAP,
+	MOVE_TYPE_STEP,
+};
+
 enum Step {
 	STEP_BACK = -1,
 	STEP_NONE = 0,
@@ -148,7 +155,7 @@ public:
 	void undo();
 	bool has_redo();
 	void redo();
-	void move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_offset);
+	void move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_offset, MoveType type = MOVE_TYPE_MOVE);
 
 protected:
 	Size size_y;

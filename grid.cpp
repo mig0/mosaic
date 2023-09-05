@@ -873,11 +873,19 @@ void Grid::redo() {
 	remove_redo_on_change = true;
 }
 
+struct Area {
+	Index y1, x1, y2, x2;
+};
+
 bool is_inside_area(Index y, Index x, Index y_min, Index x_min, Index y_max, Index x_max) {
 	return y >= y_min && x >= x_min && y <= y_max && x <= x_max;
 }
 
-void Grid::move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_offset) {
+bool is_inside_area(Index y, Index x, Area area) {
+	return is_inside_area(y, x, area.y1, area.x1, area.y2, area.x2);
+}
+
+void Grid::move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_offset, MoveType type/* = MOVE_TYPE_MOVE*/) {
 	if (y_offset == 0 && x_offset == 0)
 		return;
 
@@ -889,9 +897,21 @@ void Grid::move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_of
 	Step y_step = y_offset > 0 ? STEP_BACK : STEP_FORW;
 	Step x_step = x_offset > 0 ? STEP_BACK : STEP_FORW;
 
+	Area src_area = { y_min, x_min, y_max, x_max };
+	Area dst_area = { y_min + y_offset, x_min + x_offset, y_max + y_offset, x_max + x_offset };
+
 	for (Index y = y_offset > 0 ? y_max + y_offset : y_min + y_offset; y_offset > 0 ? y >= y_min : y <= y_max; y += y_step) {
 		for (Index x = x_offset > 0 ? x_max + x_offset : x_min + x_offset; x_offset > 0 ? x >= x_min : x <= x_max; x += x_step) {
-			Color color = is_inside_area(y - y_offset, x - x_offset, y_min, x_min, y_max, x_max) ? get_color(y - y_offset, x - x_offset) : bg_color;
+			if (type == MOVE_TYPE_MOVE && !is_inside_area(y, x, src_area) && !is_inside_area(y, x, dst_area))
+				continue;
+			if (type == MOVE_TYPE_COPY && !is_inside_area(y, x, dst_area))
+				continue;
+			if (type == MOVE_TYPE_SWAP) {
+				if (is_inside_area(y, x, dst_area))
+					swap_colors(y, x, y - y_offset, x - x_offset);
+				continue;
+			}
+			Color color = is_inside_area(y, x, dst_area) ? get_color(y - y_offset, x - x_offset) : bg_color;
 			set_color(y, x, color);
 		}
 	}
