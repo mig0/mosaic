@@ -168,6 +168,19 @@ void test_set_color() {
 	(grid.get_colors())[10][20] = Bl;
 }
 
+void test_swap_colors() {
+	GridDrawTest test("swap_colors", "set_color using opposite colors");
+
+	grid.set_color(15, 15, Or);
+	grid.set_color(5, 10, Bl);
+	grid.swap_colors(15, 15, 5, 10);
+
+	test.cut();
+
+	grid.set_color(15, 15, Bl);
+	grid.set_color(5, 10, Or);
+}
+
 void test_draw_text() {
 	GridDrawTest test("draw_text \"Danik\"", "5 chars");
 
@@ -573,6 +586,7 @@ int main(int argc, char **argv) {
 	test_parse_options();
 	test_get_line_size();
 	test_set_color();
+	test_swap_colors();
 	test_draw_text();
 	test_draw_square();
 	test_draw_rhomb();

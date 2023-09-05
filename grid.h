@@ -81,6 +81,7 @@ public:
 	const char *get_color_name(Color color);
 	string get_color_name(Index y, Index x);
 	void set_color(Index y, Index x, Color color, bool ignore_rainbow = false);
+	void swap_colors(Index y1, Index x1, Index y2, Index x2);
 
 	sigc::signal<void(Index, Index, Color)> signal_on_set_color;
 	sigc::signal<void(bool, bool)> signal_on_change_undo_redo;

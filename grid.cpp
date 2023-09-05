@@ -78,6 +78,12 @@ void Grid::set_color(Index y, Index x, Color color, bool ignore_rainbow/* = fals
 	signal_on_set_color.emit(y, x, color);
 }
 
+void Grid::swap_colors(Index y1, Index x1, Index y2, Index x2) {
+	Color old_color1 = get_color(y1, x1);
+	set_color(y1, x1, get_color(y2, x2), true);
+	set_color(y2, x2, old_color1, true);
+}
+
 int min(int a, int b) {
 	return a < b ? a : b;
 }
