@@ -625,6 +625,10 @@ bool MosaicWindow::is_active_cell3(int y, int x) {
 void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x) {
 	if (has_active_cell2()) {
 		set_active_cell3(cell_y, cell_x);
+		int new_x_offset = active_cell3_x - active_cell_x;
+		int new_y_offset = active_cell3_y - active_cell_y;
+		move_x_offset_spin.set_value(new_x_offset);
+		move_y_offset_spin.set_value(new_y_offset);
 	}
 	else if (has_active_cell()) {
 		Size new_radius = grid.get_line_size(active_cell_y, active_cell_x, cell_y, cell_x);
