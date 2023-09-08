@@ -449,22 +449,29 @@ void test_grid_save_load_failed() {
 void test_grid_move() {
 	GridDrawTest test("move rect, circle, square", "other rect, circle, square");
 
-	grid.draw_filled_rect_2(5, 5, 10, 10, Or, Gr);
-	grid.move(5, 5, 10, 10, -2, +2);
+	grid.draw_filled_rect_2(3, 3, 8, 8, Or, Gr);
+	grid.move(3, 3, 8, 8, -2, +2);
 	grid.draw_circle(15, 15, 5, Or);
 	grid.move(10, 10, 20, 20, 1, 0);
 	grid.draw_square(15, 26, 4, Bl);
-	grid.move(11, 22, 19, 30, 0, 0);
+	grid.move(11, 22, 19, 30, 0, 0, MOVE_TYPE_MOVE);
 	grid.draw_rect(28, 15, 23, 20, Re);
 	grid.move(28, 15, 23, 20, -1, -10, MOVE_TYPE_COPY);
+	grid.draw_text(24, 25, "Dani", Gr);
+	grid.move(24, 29, 28, 31, 0, 8, MOVE_TYPE_SWAP);
+	grid.draw_text(3, 14, "Nice", Re);
+	grid.move(2, 14, 7, 28, 1, 1, MOVE_TYPE_STEP);
 
 	test.cut();
 
-	grid.draw_filled_rect_2(3, 7, 8, 12, Or, Gr);
+	grid.draw_filled_rect_2(1, 5, 6, 10, Or, Gr);
 	grid.draw_circle(16, 15, 5, Or);
 	grid.draw_square(15, 26, 4, Bl);
 	grid.draw_rect(28, 15, 23, 20, Re);
 	grid.draw_rect(27, 5, 22, 10, Re);
+	grid.draw_text(24, 25, "Dina", Gr);
+	grid.draw_text(4, 15, "Nice", Re);
+	grid.draw_line(3, 14, 7, 14, Re);
 }
 
 // Manual tests for Grid methods by prompting user (or automatic undo in non manual mode)

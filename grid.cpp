@@ -889,6 +889,23 @@ void Grid::move(Index y1, Index x1, Index y2, Index x2, Size y_offset, Size x_of
 	if (y_offset == 0 && x_offset == 0)
 		return;
 
+	if (type == MOVE_TYPE_STEP) {
+		vector <shared_ptr <Cell>> line_cells = collect(&Grid::draw_line, y1, x1, y1 + y_offset, x1 + x_offset, Wh);
+		shared_ptr <Cell> last_cell = nullptr;
+		for (Index i = 0; i < line_cells.size() && i < line_cells.size(); i++) {
+			shared_ptr <Cell> cell = line_cells[i];
+			if (last_cell != nullptr) {
+				Index area_y2 = last_cell->y - y1 + y2;
+				Index area_x2 = last_cell->x - x1 + x2;
+				Index y_offset = cell->y - last_cell->y;
+				Index x_offset = cell->x - last_cell->x;
+				move(last_cell->y, last_cell->x, area_y2, area_x2, y_offset, x_offset, MOVE_TYPE_COPY);
+			}
+			last_cell = cell;
+		}
+		return;
+	}
+
 	Index y_min = min(y1, y2);
 	Index x_min = min(x1, x2);
 	Index y_max = max(y1, y2);
