@@ -27,5 +27,6 @@ button.active-cell.yellow { background: linear-gradient(to left top, white, rgb(
 button.active-cell.orange { background: linear-gradient(to left top, white, rgb(240, 140, 30)  75%); }
 button.active-cell.blue   { background: linear-gradient(to left top, white, rgb(30, 120, 240)  75%); }
 button.active-cell.green  { background: linear-gradient(to left top, white, rgb(60, 200, 60)   75%); }
+button.screensaver { border-radius: 0px; border: 0px; padding: 1px; }
 
 )CSS"

@@ -1,6 +1,18 @@
 #include <gtkmm.h>
 #include <gdkmm.h>
 #include "grid.h"
+#include "screensaver.h"
+
+enum ActionType {
+	ACTION_DRAW,
+	ACTION_SAVE,
+	ACTION_LOAD,
+	ACTION_UNDO,
+	ACTION_REDO,
+	ACTION_MOVE,
+	ACTION_KEY_PRESS,
+	ACTION_MOUSE_PRESS,
+};
 
 class MosaicWindow : public Gtk::Window
 {
@@ -82,8 +94,12 @@ protected:
 	Gtk::Button about_button;
 	Gtk::Button quit_button;
 
+	Screensaver screensaver;
+
 	Glib::RefPtr<Gtk::CssProvider> css_provider;
 	Grid &grid;
+
+	bool register_action(ActionType type);
 
 	void set_undo_redo_sensitive_callback(bool has_undo, bool has_redo);
 	void set_move_buttons_sensitive();
@@ -109,6 +125,7 @@ protected:
 	bool has_active_cell3();
 	bool is_active_cell3(int y, int x);
 
+	void on_grid_button1_press(Index cell_y, Index cell_x);
 	void on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x);
 	void on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x);
 	bool on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state);
@@ -134,6 +151,10 @@ protected:
 	void redo();
 	void move(int y_offset, int x_offset);
 	void move_area();
+
+	void start_screensaver();
+	void stop_screensaver();
+	bool is_screensaver_active();
 
 public:
 	MosaicWindow(Grid &grid0);

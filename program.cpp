@@ -68,7 +68,7 @@ Options:
 		}
 	}
 
-	if (size_x < 6 || size_y < 6) {
+	if (size_x < 10 || size_y < 10) {
 		cerr << "Requested size " << size_x << 'x' << size_y << " is too small" << endl;
 		exit(1);
 	}

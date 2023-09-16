@@ -93,7 +93,7 @@ vector<Glib::ustring> move_type_strings = {
 	"Step",
 };
 
-MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
+MosaicWindow::MosaicWindow(Grid &grid_) : grid(grid_), screensaver(grid_) {
 	ostringstream str_stream;
 	Size size_y = grid.get_size_y();
 	Size size_x = grid.get_size_x();
@@ -416,13 +416,7 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 			main_grid.attach(button, x, y);
 			button.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 			set_button_coord_tooltip(button, y, x);
-			button.signal_clicked().connect([this, y, x]() {
-				if (has_active_cell()) {
-					set_active_cell2(y, x);
-				} else {
-					set_grid_cell_active_color(y, x);
-				}
-			});
+			button.signal_clicked().connect([this, y, x]() { on_grid_button1_press(y, x); });
 			auto button2_controller = Gtk::GestureClick::create();
 			button2_controller->set_button(GDK_BUTTON_MIDDLE);
 			button2_controller->set_propagation_phase(Gtk::PropagationPhase::CAPTURE);
@@ -447,6 +441,20 @@ MosaicWindow::MosaicWindow(Grid &grid0) : grid(grid0) {
 	add_controller(controller);
 }
 
+bool MosaicWindow::register_action(ActionType type) {
+	if (is_screensaver_active()) {
+		stop_screensaver();
+		return false;
+	}
+	switch (type) {
+	case ACTION_DRAW:
+	case ACTION_LOAD:
+	case ACTION_MOVE:
+		grid.push_undo();
+	}
+	return true;
+}
+
 void MosaicWindow::set_undo_redo_sensitive_callback(bool has_undo, bool has_redo) {
 	undo_button.set_sensitive(has_undo);
 	redo_button.set_sensitive(has_redo);
@@ -469,6 +477,8 @@ void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
 	if (is_active_cell(cell_y, cell_x) || is_active_cell2(cell_y, cell_x) || is_active_cell3(cell_y, cell_x) ||
 		&button == &active_cell_button || &button == &active_cell2_button || &button == &active_cell3_button)
 		css_classes.push_back("active-cell");
+	if (is_screensaver_active())
+		css_classes.push_back("screensaver");
 	button.set_css_classes(css_classes);
 }
 
@@ -492,7 +502,7 @@ void MosaicWindow::reload_grid() {
 }
 
 void MosaicWindow::set_grid_cell_color(Index y, Index x, Color color) {
-	grid.push_undo();
+	if (!register_action(ACTION_DRAW)) return;
 	grid.set_color(y, x, color);
 }
 
@@ -622,7 +632,17 @@ bool MosaicWindow::is_active_cell3(int y, int x) {
 	return has_active_cell3() && y == active_cell3_y && x == active_cell3_x;
 }
 
+void MosaicWindow::on_grid_button1_press(Index cell_y, Index cell_x) {
+	if (!register_action(ACTION_MOUSE_PRESS)) return;
+	if (has_active_cell()) {
+		set_active_cell2(cell_y, cell_x);
+	} else {
+		set_grid_cell_active_color(cell_y, cell_x);
+	}
+}
+
 void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y, Index cell_x) {
+	if (!register_action(ACTION_MOUSE_PRESS)) return;
 	if (has_active_cell2()) {
 		set_active_cell3(cell_y, cell_x);
 		int new_x_offset = active_cell3_x - active_cell_x;
@@ -640,6 +660,7 @@ void MosaicWindow::on_grid_button2_press(int n, double x, double y, Index cell_y
 }
 
 void MosaicWindow::on_grid_button3_press(int n, double x, double y, Index cell_y, Index cell_x) {
+	if (!register_action(ACTION_MOUSE_PRESS)) return;
 	if (cell_y == active_cell_y && cell_x == active_cell_x) {
 		cell_y = NO_INDEX;
 		cell_x = NO_INDEX;
@@ -648,6 +669,8 @@ void MosaicWindow::on_grid_button3_press(int n, double x, double y, Index cell_y
 }
 
 bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state) {
+	if (!register_action(ACTION_KEY_PRESS)) return true;
+
 	Gdk::ModifierType modifier_mask = state & (Gdk::ModifierType::SHIFT_MASK | Gdk::ModifierType::CONTROL_MASK | Gdk::ModifierType::ALT_MASK);
 
 	if (keyval == GDK_KEY_1 && modifier_mask == Gdk::ModifierType::ALT_MASK) {
@@ -685,13 +708,16 @@ bool MosaicWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType 
 		move(0, +1);
 		return true;
 	}
+	else if (keyval == GDK_KEY_s && modifier_mask == Gdk::ModifierType::CONTROL_MASK) {
+		start_screensaver();
+	}
 
 	// the event has not been handled
 	return false;
 }
 
 void MosaicWindow::draw_text() {
-	grid.push_undo();
+	if (!register_action(ACTION_DRAW)) return;
 
 	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
@@ -701,10 +727,10 @@ void MosaicWindow::draw_text() {
 }
 
 void MosaicWindow::draw_circle() {
+	if (!register_action(ACTION_DRAW)) return;
+
 	Size radius = draw_circle_radius_spin.get_value();
 	auto type = draw_circle_type_dropdown.get_selected();
-
-	grid.push_undo();
 
 	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
@@ -779,9 +805,9 @@ void MosaicWindow::draw_circle() {
 }
 
 void MosaicWindow::draw_rect() {
-	auto type = draw_rect_type_dropdown.get_selected();
+	if (!register_action(ACTION_DRAW)) return;
 
-	grid.push_undo();
+	auto type = draw_rect_type_dropdown.get_selected();
 
 	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
@@ -823,9 +849,9 @@ void MosaicWindow::draw_rect() {
 }
 
 void MosaicWindow::draw_triangle() {
-	auto type = draw_triangle_type_dropdown.get_selected();
+	if (!register_action(ACTION_DRAW)) return;
 
-	grid.push_undo();
+	auto type = draw_triangle_type_dropdown.get_selected();
 
 	grid.start_rainbow((RainbowType)rainbow_dropdown.get_selected());
 
@@ -914,7 +940,7 @@ void MosaicWindow::show_file_dialog(bool is_save) {
 }
 
 void MosaicWindow::clear() {
-	grid.push_undo();
+	if (!register_action(ACTION_DRAW)) return;
 	grid.clear();
 }
 
@@ -937,11 +963,12 @@ void MosaicWindow::on_file_dialog_load(int response_id, Gtk::FileChooserDialog* 
 }
 
 void MosaicWindow::save() {
+	if (!register_action(ACTION_SAVE)) return;
 	show_file_dialog(true);
 }
 
 void MosaicWindow::load() {
-	grid.push_undo();
+	if (!register_action(ACTION_LOAD)) return;
 	show_file_dialog(false);
 }
 
@@ -959,6 +986,7 @@ void MosaicWindow::on_hide() {
 }
 
 void MosaicWindow::undo() {
+	if (!register_action(ACTION_UNDO)) return;
 	if (grid.has_undo())
 		grid.undo();
 	else
@@ -966,6 +994,7 @@ void MosaicWindow::undo() {
 }
 
 void MosaicWindow::redo() {
+	if (!register_action(ACTION_REDO)) return;
 	if (grid.has_redo())
 		grid.redo();
 	else
@@ -973,6 +1002,8 @@ void MosaicWindow::redo() {
 }
 
 void MosaicWindow::move(int y_offset, int x_offset) {
+	if (!register_action(ACTION_MOVE)) return;
+
 	MoveType type = (MoveType)move_type_dropdown.get_selected();
 
 	if (!has_active_cell()) {
@@ -997,7 +1028,6 @@ void MosaicWindow::move(int y_offset, int x_offset) {
 		return;
 	}
 
-	grid.push_undo();
 	grid.move(active_cell_y, active_cell_x, active_cell2_y, active_cell2_x, y_offset, x_offset, type);
 
 	if (type != MOVE_TYPE_COPY) {
@@ -1008,4 +1038,25 @@ void MosaicWindow::move(int y_offset, int x_offset) {
 
 void MosaicWindow::move_area() {
 	move(move_y_offset_spin.get_value(), move_x_offset_spin.get_value());
+}
+
+void MosaicWindow::start_screensaver() {
+	for (Index y = 0; y < grid.get_size_y(); y++) {
+		for (Index x = 0; x < grid.get_size_x(); x++) {
+			Color color = grid.get_color(y, x);
+			Gtk::Button &button = *(Gtk::Button *)main_grid.get_child_at(x, y);
+			vector<Glib::ustring> css_classes = { "screensaver", color == NO_COLOR ? "none" : grid.get_color_name(color) };
+			button.set_css_classes(css_classes);
+		}
+	}
+	screensaver.start();
+}
+
+void MosaicWindow::stop_screensaver() {
+	screensaver.stop();
+	reload_grid();
+}
+
+bool MosaicWindow::is_screensaver_active() {
+	return screensaver.is_active();
 }
