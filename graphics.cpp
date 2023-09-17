@@ -93,6 +93,18 @@ vector<Glib::ustring> move_type_strings = {
 	"Step",
 };
 
+void IconButton::set_icon_and_label(const Glib::ustring &icon_name, const Glib::ustring &name) {
+	image.set_from_icon_name(icon_name);
+	box.append(image);
+	label.set_label(name);
+	box.append(label);
+	box.set_orientation(Gtk::Orientation::HORIZONTAL);
+	box.set_halign(Gtk::Align::CENTER);
+	box.set_spacing(5);
+	box.set_baseline_child(1);
+	set_child(box);
+}
+
 MosaicWindow::MosaicWindow(Grid &grid_) : grid(grid_), screensaver(grid_) {
 	ostringstream str_stream;
 	Size size_y = grid.get_size_y();
@@ -389,30 +401,26 @@ MosaicWindow::MosaicWindow(Grid &grid_) : grid(grid_), screensaver(grid_) {
 	button_box.set_orientation(Gtk::Orientation::HORIZONTAL);
 	button_box.set_halign(Gtk::Align::CENTER);
 	button_box.set_margin(2);
+	button_box.set_spacing(8);
 
 	button_box.append(clear_button);
-	clear_button.set_label("Clear");
-	clear_button.set_margin(4);
+	clear_button.set_icon_and_label("edit-clear-all", "Clear");
 	clear_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::clear));
 
 	button_box.append(save_button);
-	save_button.set_label("Save");
-	save_button.set_margin(4);
+	save_button.set_icon_and_label("document-save", "Save");
 	save_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::save));
 
 	button_box.append(load_button);
-	load_button.set_label("Load");
-	load_button.set_margin(4);
+	load_button.set_icon_and_label("document-open", "Load");
 	load_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::load));
 
 	button_box.append(about_button);
-	about_button.set_label("About");
-	about_button.set_margin(4);
+	about_button.set_icon_and_label("help-about", "About");
 	about_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::show_about_dialog));
 
 	button_box.append(quit_button);
-	quit_button.set_label("Quit");
-	quit_button.set_margin(4);
+	quit_button.set_icon_and_label("application-exit", "Quit");
 	quit_button.signal_clicked().connect(sigc::mem_fun(*this, &MosaicWindow::quit));
 
 	main_grid.set_margin(10);

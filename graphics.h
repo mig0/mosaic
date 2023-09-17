@@ -14,8 +14,20 @@ enum ActionType {
 	ACTION_MOUSE_PRESS,
 };
 
-class MosaicWindow : public Gtk::Window
-{
+class IconButton : public Gtk::Button {
+public:
+	void set_icon_and_label(const Glib::ustring &icon_name, const Glib::ustring &name);
+
+protected:
+	Gtk::Box box;
+	Gtk::Image image;
+	Gtk::Label label;
+};
+
+class MosaicWindow : public Gtk::Window {
+public:
+	MosaicWindow(Grid &grid);
+
 protected:
 	Gtk::Box main_box;
 	Gtk::Frame main_frame;
@@ -89,11 +101,11 @@ protected:
 	Gtk::Button move_area_button;
 
 	Gtk::Box button_box;
-	Gtk::Button clear_button;
-	Gtk::Button save_button;
-	Gtk::Button load_button;
-	Gtk::Button about_button;
-	Gtk::Button quit_button;
+	IconButton clear_button;
+	IconButton save_button;
+	IconButton load_button;
+	IconButton about_button;
+	IconButton quit_button;
 
 	Screensaver screensaver;
 
@@ -157,8 +169,5 @@ protected:
 	void stop_screensaver();
 	void toggle_screensaver();
 	bool is_screensaver_active();
-
-public:
-	MosaicWindow(Grid &grid0);
 };
 
