@@ -30,6 +30,7 @@ protected:
 	Gtk::Button move_u_button;
 	Gtk::Button move_d_button;
 	Gtk::Button move_r_button;
+	Gtk::Button screensaver_button;
 
 	Gtk::Box action_box;
 
@@ -154,6 +155,7 @@ protected:
 
 	void start_screensaver();
 	void stop_screensaver();
+	void toggle_screensaver();
 	bool is_screensaver_active();
 
 public:

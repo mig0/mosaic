@@ -175,6 +175,16 @@ MosaicWindow::MosaicWindow(Grid &grid_) : grid(grid_), screensaver(grid_) {
 	move_r_button.set_margin(4);
 	move_r_button.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::move), 0, +1));
 
+	Gtk::Separator mini_button_separator2(Gtk::Orientation::HORIZONTAL);
+	mini_button_box.append(mini_button_separator2);
+	mini_button_separator2.set_margin(4);
+
+	mini_button_box.append(screensaver_button);
+	screensaver_button.set_icon_name("video-display");
+	screensaver_button.set_tooltip_text("Toggle screensaver");
+	screensaver_button.set_margin(4);
+	screensaver_button.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &MosaicWindow::toggle_screensaver)));
+
 	control_box.append(action_box);
 	action_box.set_orientation(Gtk::Orientation::VERTICAL);
 	action_box.set_valign(Gtk::Align::START);
@@ -1055,6 +1065,13 @@ void MosaicWindow::start_screensaver() {
 void MosaicWindow::stop_screensaver() {
 	screensaver.stop();
 	reload_grid();
+}
+
+void MosaicWindow::toggle_screensaver() {
+	if (is_screensaver_active())
+		stop_screensaver();
+	else
+		start_screensaver();
 }
 
 bool MosaicWindow::is_screensaver_active() {
