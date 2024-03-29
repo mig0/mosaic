@@ -29,4 +29,20 @@ button.active-cell.blue   { background: linear-gradient(to left top, white, rgb(
 button.active-cell.green  { background: linear-gradient(to left top, white, rgb(60, 200, 60)   75%); }
 button.screensaver { border-radius: 0px; border: 0px; padding: 1px; }
 
+button.border { background-image: url("file:/home/danik/work/mosaic/dungeon/border.png"); }
+button.cloud  { background-image: url("file:/home/danik/work/mosaic/dungeon/cloud.png"); }
+button.floor  { background-image: url("file:/home/danik/work/mosaic/dungeon/floor.png"); }
+button.char   { background-image: url("file:/home/danik/work/mosaic/dungeon/char.png"); }
+button.enemy  { background-image: url("file:/home/danik/work/mosaic/dungeon/enemy.png"); }
+button.status { background-image: url("file:/home/danik/work/mosaic/dungeon/status.png"); }
+button.crack  { background-image: url("file:/home/danik/work/mosaic/dungeon/crack.png"); }
+button.bones  { background-image: url("file:/home/danik/work/mosaic/dungeon/bones.png"); }
+button.rocks  { background-image: url("file:/home/danik/work/mosaic/dungeon/rocks.png"); }
+button.plate  { background-image: url("file:/home/danik/work/mosaic/dungeon/plate.png"); }
+button.barrel { background-image: url("file:/home/danik/work/mosaic/dungeon/barrel.png"); }
+button.gate0  { background-image: url("file:/home/danik/work/mosaic/dungeon/gate0.png"); }
+button.gate1  { background-image: url("file:/home/danik/work/mosaic/dungeon/gate1.png"); }
+button.portal { background-image: url("file:/home/danik/work/mosaic/dungeon/portal.png"); }
+button.dungeon { min-width: 64px; min-height: 64px; background-color: #a8b6b7; }
+
 )CSS"

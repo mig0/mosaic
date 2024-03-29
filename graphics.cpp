@@ -497,6 +497,8 @@ void MosaicWindow::set_button_color(Gtk::Widget &button, Color color) {
 		css_classes.push_back("active-cell");
 	if (is_screensaver_active())
 		css_classes.push_back("screensaver");
+	if (IS_DUNGEON)
+		css_classes.push_back("dungeon");
 	button.set_css_classes(css_classes);
 }
 

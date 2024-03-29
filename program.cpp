@@ -24,18 +24,20 @@ map <string, int> parse_options(int &argc, char *argv[], char *envp[]) {
 		{ "help",         no_argument,       NULL, 'h' },
 		{ "version",      no_argument,       NULL, 'v' },
 		{ "new-instance", no_argument,       NULL, 'n' },
+		{ "dungeon",      no_argument,       NULL, 'd' },
 		{ "size",         required_argument, NULL, 's' },
 		{ 0 },
 	};
 
 	bool new_instance = false;
+	bool is_dungeon = false;
 	int size_y = 30;
 	int size_x = 30;
 
 	parse_size(getenv("MOSAIC_SIZE"), size_x, size_y);
 
 	while (1) {
-		const int opt = getopt_long(argc, argv, "hvns:", longopts, 0);
+		const int opt = getopt_long(argc, argv, "hvnds:", longopts, 0);
 		if (opt == -1) {
 			break;
 		}
@@ -48,6 +50,7 @@ Options:
 	-h --help          show this help and exit
 	-v --version       show program version and exit
 	-n --new-instance  create new graphical instance
+	-d --dungeon       set dungeon sprite set and size 11x11)
 	-s --size          set grid size (default: 30x30)
 )";
 			exit(0);
@@ -56,6 +59,11 @@ Options:
 			exit(0);
 		case 'n':
 			new_instance = true;
+			break;
+		case 'd':
+			size_x = size_y = 13;
+			is_dungeon = true;
+			initial_sav_filename = "dungeon-gate-puzzle.sav";
 			break;
 		case 's':
 			if (!parse_size(optarg, size_x, size_y)) {
@@ -86,6 +94,7 @@ Options:
 
 	return {
 		{ "new-instance", new_instance ? 1 : 0 },
+		{ "is_dungeon", is_dungeon ? 1 : 0 },
 		{ "size_y", size_y },
 		{ "size_x", size_x },
 	};

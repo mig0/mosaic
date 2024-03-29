@@ -8,6 +8,8 @@
 #include <sigc++/sigc++.h>
 using namespace std;
 
+extern bool IS_DUNGEON;
+
 enum Color {
 	COLOR_WHITE = 0,
 	COLOR_YELLOW,
@@ -22,10 +24,32 @@ enum Color {
 	Or = 3,
 	Gr = 4,
 	Bl = 5,
+
+	CELL_BORDER = 0,
+	CELL_CLOUD,
+	CELL_FLOOR,
+	CELL_CHAR,
+	CELL_ENEMY,
+	CELL_PORTAL,
+	CELL_BARREL,
+	CELL_PLATE,
+	CELL_GATE0,
+	CELL_GATE1,
+	CELL_CRACK,
+	CELL_BONES,
+	CELL_ROCKS,
+	CELL_STATUS,
+
+/*
 	NUM_COLORS,
 	NO_COLOR = NUM_COLORS,
 	COLOR_FIRST = 0,
 	COLOR_LAST = NUM_COLORS - 1,
+*/
+#define NUM_COLORS (Color)(IS_DUNGEON ? CELL_STATUS + 1 : 6)
+#define NO_COLOR NUM_COLORS
+#define COLOR_FIRST (Color)0
+#define COLOR_LAST (NUM_COLORS - 1)
 };
 
 enum RainbowType {

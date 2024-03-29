@@ -6,6 +6,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	map <string, int> preferences = parse_options(argc, argv, envp);
 
 	Grid grid(preferences["size_y"], preferences["size_x"]);
+	IS_DUNGEON = preferences["is_dungeon"] == 1;
 
 	grid.push_undo();
 	grid.start_rainbow(RAINBOW_BEST);

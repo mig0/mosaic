@@ -3,6 +3,8 @@
 
 //#define NAIVE_LINE_ALGORYTHM 1
 
+bool IS_DUNGEON = false;
+
 Grid::Grid(Size size_y_, Size size_x_) : Grid(size_y_, size_x_, Wh) {
 }
 
@@ -33,6 +35,23 @@ Color Grid::get_bg_color() {
 
 const char *Grid::get_color_name(Color color) {
 	return
+		IS_DUNGEON ? (
+		color == CELL_BORDER ? "border" :
+		color == CELL_CLOUD  ? "cloud" :
+		color == CELL_FLOOR  ? "floor" :
+		color == CELL_CHAR   ? "char" :
+		color == CELL_ENEMY  ? "enemy" :
+		color == CELL_STATUS ? "status" :
+		color == CELL_CRACK  ? "crack" :
+		color == CELL_BONES  ? "bones" :
+		color == CELL_ROCKS  ? "rocks" :
+		color == CELL_PLATE  ? "plate" :
+		color == CELL_BARREL ? "barrel" :
+		color == CELL_GATE0  ? "gate0" :
+		color == CELL_GATE1  ? "gate1" :
+		color == CELL_PORTAL ? "portal" :
+		throw "Invalid color"
+		) :
 		color == Re ? "red" :
 		color == Wh ? "white" :
 		color == Ye ? "yellow" :
@@ -624,6 +643,23 @@ string get_color_term_str(Color color) {
 
 char get_save_char_for_color(Color color) {
 	return
+		IS_DUNGEON ? (
+		color == CELL_BORDER ? '#' :
+		color == CELL_CLOUD  ? '~' :
+		color == CELL_FLOOR  ? '.' :
+		color == CELL_CHAR   ? '@' :
+		color == CELL_ENEMY  ? '&' :
+		color == CELL_PORTAL ? 'O' :
+		color == CELL_BARREL ? '*' :
+		color == CELL_PLATE  ? '_' :
+		color == CELL_GATE0  ? 'G' :
+		color == CELL_GATE1  ? '^' :
+		color == CELL_CRACK  ? ',' :
+		color == CELL_BONES  ? ':' :
+		color == CELL_ROCKS  ? ';' :
+		color == CELL_STATUS ? '=' :
+		throw "Invalid color"
+		) :
 		color == Re ? '#' :
 		color == Wh ? '.' :
 		color == Ye ? ':' :
@@ -635,6 +671,23 @@ char get_save_char_for_color(Color color) {
 
 Color get_color_for_save_char(char ch) {
 	return
+		IS_DUNGEON ? (
+		ch == get_save_char_for_color(CELL_BORDER) ? CELL_BORDER :
+		ch == get_save_char_for_color(CELL_CLOUD)  ? CELL_CLOUD  :
+		ch == get_save_char_for_color(CELL_FLOOR)  ? CELL_FLOOR  :
+		ch == get_save_char_for_color(CELL_CHAR)   ? CELL_CHAR   :
+		ch == get_save_char_for_color(CELL_ENEMY)  ? CELL_ENEMY  :
+		ch == get_save_char_for_color(CELL_PORTAL) ? CELL_PORTAL :
+		ch == get_save_char_for_color(CELL_BARREL) ? CELL_BARREL :
+		ch == get_save_char_for_color(CELL_PLATE)  ? CELL_PLATE  :
+		ch == get_save_char_for_color(CELL_GATE0)  ? CELL_GATE0  :
+		ch == get_save_char_for_color(CELL_GATE1)  ? CELL_GATE1  :
+		ch == get_save_char_for_color(CELL_CRACK)  ? CELL_CRACK  :
+		ch == get_save_char_for_color(CELL_BONES)  ? CELL_BONES  :
+		ch == get_save_char_for_color(CELL_ROCKS)  ? CELL_ROCKS  :
+		ch == get_save_char_for_color(CELL_STATUS) ? CELL_STATUS :
+		throw string("Invalid save char ") + ch
+		) :
 		ch == get_save_char_for_color(Re) ? Re :
 		ch == get_save_char_for_color(Wh) ? Wh :
 		ch == get_save_char_for_color(Ye) ? Ye :
